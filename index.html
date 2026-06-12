@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>iWidgetOS</title>
+    <style>
+        :root {
+            --bg-gradient: linear-gradient(135deg, #111827 0%, #1f2937 50%, #111827 100%);
+            --widget-bg: rgba(255, 255, 255, 0.1);
+            --widget-blur: 20px;
+            --text-color: #ffffff;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        body {
+            background: var(--bg-gradient);
+            background-attachment: fixed;
+            color: var(--text-color);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-x: hidden;
+        }
+
+        /* Top Bar Customizer */
+        .top-bar {
+            position: sticky;
+            top: 10px;
+            z-index: 1000;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 12px 24px;
+            border-radius: 30px;
+            backdrop-filter: blur(10px);
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.9rem;
+        }
+
+        .slider {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100px;
+            height: 6px;
+            border-radius: 5px;
+            background: rgba(255,255,255,0.3);
+            outline: none;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: white;
+            cursor: pointer;
+        }
+
+        .btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 6px 14px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        /* iOS 16 Lock Screen Clock */
+        .ios-clock-container {
+            text-align: center;
+            margin: 20px 0 40px 0;
+        }
+
+        .ios-date {
+            font-size: 1.2rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .ios-clock {
+            font-size: 5.5rem;
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        /* Widget Grid */
+        .widget-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 16px;
+            width: 100%;
+            max-width: 1200px;
+            padding-bottom: 50px;
+        }
+
+        /* Hardcoded Widget Elements */
+        .widget {
+            background: var(--widget-bg);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(var(--widget-blur));
+            -webkit-backdrop-filter: blur(var(--widget-blur));
+            border-radius: 22px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            aspect-ratio: 1 / 1;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .widget-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.6;
+            font-weight: 700;
+        }
+
+        .widget-value {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin: 5px 0;
+            word-break: break-all;
+        }
+
+        .widget-desc {
+            font-size: 0.75rem;
+            opacity: 0.7;
+        }
+    </style>
+</head>
+<body>
+
+    <audio id="bg-music" loop src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"></audio>
+
+    <div class="top-bar">
+        <div class="control-group">
+            <label>Tint:</label>
+            <input type="range" id="tint-slider" class="slider" min="5" max="80" value="15">
+        </div>
+        <div class="control-group">
+            <label>Blur:</label>
+            <input type="range" id="blur-slider" class="slider" min="0" max="40" value="20">
+        </div>
+        <button class="btn" id="music-btn" onclick="toggleMusic()">Music</button>
+    </div>
+
+    <div class="ios-clock-container">
+        <div class="ios-date" id="ios-date">LOADING...</div>
+        <div class="ios-clock" id="ios-clock">00:00 AM</div>
+    </div>
+
+    <div class="widget-grid">
+        <div class="widget"><div class="widget-title">Battery</div><div class="widget-value" id="v1">--</div><div class="widget-desc" id="d1">System Battery</div></div>
+        <div class="widget"><div class="widget-title">Net Speed</div><div class="widget-value" id="v2">--</div><div class="widget-desc" id="d2">Web Connection</div></div>
+        <div class="widget"><div class="widget-title">Engine</div><div class="widget-value" id="v3">Online</div><div class="widget-desc">Browser State</div></div>
+        <div class="widget"><div class="widget-title">Screen W</div><div class="widget-value" id="v4">--</div><div class="widget-desc">Pixels Wide</div></div>
+        <div class="widget"><div class="widget-title">Screen H</div><div class="widget-value" id="v5">--</div><div class="widget-desc">Pixels High</div></div>
+        <div class="widget"><div class="widget-title">CPU Cores</div><div class="widget-value" id="v6">--</div><div class="widget-desc">Logical Processors</div></div>
+        <div class="widget"><div class="widget-title">Language</div><div class="widget-value" id="v7">--</div><div class="widget-desc">System Default</div></div>
+        <div class="widget"><div class="widget-title">Cookies</div><div class="widget-value" id="v8">--</div><div class="widget-desc">Cookie Permission</div></div>
+        <div class="widget"><div class="widget-title">History</div><div class="widget-value" id="v9">--</div><div class="widget-desc">Session Length</div></div>
+        <div class="widget"><div class="widget-title">Platform</div><div class="widget-value" id="v10">--</div><div class="widget-desc">Device Hardware</div></div>
+
+        <div class="widget"><div class="widget-title">Bitcoin</div><div class="widget-value" id="v11">Loading...</div><div class="widget-desc" id="d11">CoinGecko API</div></div>
+        <div class="widget"><div class="widget-title">Ethereum</div><div class="widget-value" id="v12">Loading...</div><div class="widget-desc" id="d12">CoinGecko API</div></div>
+        <div class="widget"><div class="widget-title">Solana</div><div class="widget-value" id="v13">Loading...</div><div class="widget-desc" id="d13">CoinGecko API</div></div>
+        <div class="widget"><div class="widget-title">Dogecoin</div><div class="widget-value" id="v14">Loading...</div><div class="widget-desc" id="d14">CoinGecko API</div></div>
+        <div class="widget"><div class="widget-title">Your City</div><div class="widget-value" id="v15">Detecting...</div><div class="widget-desc" id="d15">IP Geolocation</div></div>
+        <div class="widget"><div class="widget-title">Country</div><div class="widget-value" id="v16">Detecting...</div><div class="widget-desc" id="d16">IP Geolocation</div></div>
+        <div class="widget"><div class="widget-title">Local Temp</div><div class="widget-value" id="v17">Detecting...</div><div class="widget-desc" id="d17">OpenMeteo API</div></div>
+        <div class="widget"><div class="widget-title">Currency</div><div class="widget-value" id="v18">--</div><div class="widget-desc">Local Fiat Code</div></div>
+        <div class="widget"><div class="widget-title">Fact Check</div><div class="widget-value" style="font-size:1rem;" id="v19">Loading...</div><div class="widget-desc">Useless Facts API</div></div>
+        <div class="widget"><div class="widget-title">Activity</div><div class="widget-value" style="font-size:1.1rem;" id="v20">Bake a cake</div><div class="widget-desc">Suggestion Generator</div></div>
+
+        <div class="widget"><div class="widget-title">UTC Time</div><div class="widget-value" id="v21">--</div><div class="widget-desc">Coordinated Universal</div></div>
+        <div class="widget"><div class="widget-title">TZ Offset</div><div class="widget-value" id="v22">--</div><div class="widget-desc" id="d22">Zone</div></div>
+        <div class="widget"><div class="widget-title">Day Progress</div><div class="widget-value" id="v23">--</div><div class="widget-desc">Percent of Day Done</div></div>
+        <div class="widget"><div class="widget-title">Year Progress</div><div class="widget-value" id="v24">--</div><div class="widget-desc">Percent of Year Done</div></div>
+        <div class="widget"><div class="widget-title">Unix Epoch</div><div class="widget-value" style="font-size:1.2rem;" id="v25">--</div><div class="widget-desc">Seconds since 1970</div></div>
+        <div class="widget"><div class="widget-title">Day Number</div><div class="widget-value" id="v26">--</div><div class="widget-desc">Out of 365 days</div></div>
+        <div class="widget"><div class="widget-title">Month</div><div class="widget-value" id="v27">--</div><div class="widget-desc">Calendar Month</div></div>
+        <div class="widget"><div class="widget-title">Weekday</div><div class="widget-value" id="v28">--</div><div class="widget-desc">Current Day Name</div></div>
+        <div class="widget"><div class="widget-title">Leap Year</div><div class="widget-value" id="v29">--</div><div class="widget-desc">Calculation Check</div></div>
+        <div class="widget"><div class="widget-title">HighRes Ms</div><div class="widget-value" id="v30">--</div><div class="widget-desc">Time spent on page</div></div>
+
+        <div class="widget"><div class="widget-title">Pi Constant</div><div class="widget-value" id="v31">3.14159</div><div class="widget-desc">Math.PI Engine</div></div>
+        <div class="widget"><div class="widget-title">Euler No.</div><div class="widget-value" id="v32">2.71828</div><div class="widget-desc">Math.E Engine</div></div>
+        <div class="widget"><div class="widget-title">JS Heap</div><div class="widget-value" id="v33">--</div><div class="widget-desc">Memory Allocated</div></div>
+        <div class="widget"><div class="widget-title">Touch Support</div><div class="widget-value" id="v34">--</div><div class="widget-desc">Max Touch Tracks</div></div>
+        <div class="widget"><div class="widget-title">Local Store</div><div class="widget-value" id="v35">--</div><div class="widget-desc">Saved Keys Count</div></div>
+        <div class="widget"><div class="widget-title">Session Store</div><div class="widget-value" id="v36">--</div><div class="widget-desc">Temporary Keys</div></div>
+        <div class="widget"><div class="widget-title">PDF View</div><div class="widget-value" id="v37">--</div><div class="widget-desc">Native PDF Support</div></div>
+        <div class="widget"><div class="widget-title">Audio Web API</div><div class="widget-value" id="v38">--</div><div class="widget-desc">Web Audio State</div></div>
+        <div class="widget"><div class="widget-title">Crypto Module</div><div class="widget-value" id="v39">--</div><div class="widget-desc">Security Encryption</div></div>
+        <div class="widget"><div class="widget-title">Device Motion</div><div class="widget-value" id="v40">--</div><div class="widget-desc">Sensors Detection</div></div>
+        <div class="widget"><div class="widget-title">Screen Rotate</div><div class="widget-value" style="font-size:1.1rem;" id="v41">--</div><div class="widget-desc">Orientation State</div></div>
+        <div class="widget"><div class="widget-title">Theme Mode</div><div class="widget-value" id="v42">--</div><div class="widget-desc">System Appearance Flag</div></div>
+        <div class="widget"><div class="widget-title">Reduce Motion</div><div class="widget-value" id="v43">--</div><div class="widget-desc">Accessibility Setting</div></div>
+        <div class="widget"><div class="widget-title">Network RTT</div><div class="widget-value" id="v44">--</div><div class="widget-desc">Connection Delay</div></div>
+        <div class="widget"><div class="widget-title">Data Saver</div><div class="widget-value" id="v45">--</div><div class="widget-desc">Save Bandwidth Toggle</div></div>
+        <div class="widget"><div class="widget-title">Speech Engine</div><div class="widget-value" id="v46">--</div><div class="widget-desc">Text To Speech</div></div>
+        <div class="widget"><div class="widget-title">ServiceWorker</div><div class="widget-value" id="v47">--</div><div class="widget-desc">Background Worker</div></div>
+        <div class="widget"><div class="widget-title">Geolocation</div><div class="widget-value" id="v48">--</div><div class="widget-desc">GPS Core Flag</div></div>
+        <div class="widget"><div class="widget-title">Encoding</div><div class="widget-value" id="v49">--</div><div class="widget-desc">Character Set</div></div>
+        <div class="widget"><div class="widget-title">OS Build</div><div class="widget-value">v1.0.0</div><div class="widget-desc">iWidgetOS Stable</div></div>
+    </div>
+
+    <script>
+        // --- Custom Styling Controller ---
+        const tint = document.getElementById('tint-slider');
+        const blur = document.getElementById('blur-slider');
+        function applyStyles() {
+            document.documentElement.style.setProperty('--widget-bg', `rgba(255, 255, 255, ${tint.value / 100})`);
+            document.documentElement.style.setProperty('--widget-blur', blur.value + 'px');
+        }
+        tint.addEventListener('input', applyStyles);
+        blur.addEventListener('input', applyStyles);
+        applyStyles();
+
+        // --- Audio Track Switch ---
+        const track = document.getElementById('bg-music');
+        const btn = document.getElementById('music-btn');
+        let playing = false;
+        function toggleMusic() {
+            if(!playing) {
+                track.play().then(() => { btn.innerText = "🔇 Mute"; playing = true; })
+                .catch(() => alert("Click anywhere on the screen first, then press play!"));
+            } else {
+                track.pause(); btn.innerText = "🎵 Play Music"; playing = false;
+            }
+        }
+
+        // --- Active iOS 12-Hour System Clock ---
+        function runClock() {
+            const now = new Date();
+            document.getElementById('ios-date').innerText = now.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+            let h = now.getHours();
+            let m = String(now.getMinutes()).padStart(2, '0');
+            let ampm = h >= 12 ? 'PM' : 'AM';
+            h = h % 12 || 12;
+            document.getElementById('ios-clock').innerText = `${h}:${m} ${ampm}`;
+        }
+        setInterval(runClock, 1000);
+        runClock();
+
+        // --- Populate Hardware and System Data Fields ---
+        function loadSystemData() {
+            document.getElementById('v4').innerText = window.screen.width;
+            document.getElementById('v5').innerText = window.screen.height;
+            document.getElementById('v6').innerText = navigator.hardwareConcurrency || "Unknown";
+            document.getElementById('v7').innerText = navigator.language.toUpperCase();
+            document.getElementById('v8').innerText = navigator.cookieEnabled ? "Allowed" : "Blocked";
+            document.getElementById('v9').innerText = window.history.length;
+            document.getElementById('v10').innerText = navigator.maxTouchPoints > 0 ? "Mobile/Touch" : "Desktop PC";
+            document.getElementById('v34').innerText = navigator.maxTouchPoints;
+            document.getElementById('v35').innerText = localStorage.length;
+            document.getElementById('v36').innerText = sessionStorage.length;
+            document.getElementById('v37').innerText = navigator.pdfViewerEnabled ? "Yes" : "No";
+            document.getElementById('v38').innerText = (window.AudioContext) ? "Active" : "Disabled";
+            document.getElementById('v39').innerText = (window.crypto) ? "Secure" : "Missing";
+            document.getElementById('v40').innerText = (window.DeviceMotionEvent) ? "Supported" : "No Sensors";
+            document.getElementById('v41').innerText = screen.orientation ? screen.orientation.type.replace("-primary","").toUpperCase() : "PORTRAIT";
+            document.getElementById('v42').innerText = window.matchMedia('(prefers-color-scheme: dark)').matches ? "Dark" : "Light";
+            document.getElementById('v43').innerText = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? "Yes" : "No";
+            document.getElementById('v46').innerText = ('speechSynthesis' in window) ? "Ready" : "Missing";
+            document.getElementById('v47').innerText = ('serviceWorker' in navigator) ? "Supported" : "Unsupported";
+            document.getElementById('v48').innerText = (navigator.geolocation) ? "Supported" : "No GPS";
+            document.getElementById('v49').innerText = document.characterSet;
+
+            if(navigator.getBattery) {
+                navigator.getBattery().then(b => {
+                    const updateB = () => {
+                        document.getElementById('v1').innerText = Math.floor(b.level * 100) + "%";
+                        document.getElementById('d1').innerText = b.charging ? "⚡ Charging" : "Discharging";
+                    };
+                    updateB(); b.addEventListener('levelchange', updateB); b.addEventListener('chargingchange', updateB);
+                });
+            }
+            if(navigator.connection) {
+                document.getElementById('v2').innerText = navigator.connection.downlink + " Mbps";
+                document.getElementById('d2').innerText = "Type: " + navigator.connection.effectiveType.toUpperCase();
+                document.getElementById('v44').innerText = navigator.connection.rtt + " ms";
+                document.getElementById('v45').innerText = navigator.connection.saveData ? "Yes" : "No";
+            }
+        }
+
+        // --- Constant Calculations Engine Loop ---
+        setInterval(() => {
+            const d = new Date();
+            document.getElementById('v21').innerText = d.getUTCHours() + ":" + String(d.getUTCMinutes()).padStart(2, '0');
+            document.getElementById('v22').innerText = (d.getTimezoneOffset() / -60) + " Hours";
+            document.getElementById('d22').innerText = Intl.DateTimeFormat().resolvedOptions().timeZone;
+            document.getElementById('v23').innerText = (((d.getHours()*60 + d.getMinutes()) / 1440) * 100).toFixed(1) + "%";
+            
+            const start = new Date(d.getFullYear(), 0, 1);
+            document.getElementById('v24').innerText = (((d - start) / (1000*60*60*24*365)) * 100).toFixed(2) + "%";
+            document.getElementById('v25').innerText = Math.floor(Date.now() / 1000);
+            document.getElementById('v26').innerText = Math.floor((Date.now() - start)/(24*60*60*1000));
+            document.getElementById('v27').innerText = d.toLocaleString('default', { month: 'short' });
+            document.getElementById('v28').innerText = d.toLocaleString('default', { weekday: 'short' });
+            document.getElementById('v29').innerText = (new Date(d.getFullYear(), 1, 29).getMonth() === 1) ? "Yes" : "No";
+            document.getElementById('v30').innerText = Math.floor(performance.now()) + "ms";
+            if(window.performance?.memory) {
+                document.getElementById('v33').innerText = (performance.memory.usedJSHeapSize / 1048576).toFixed(1) + " MB";
+            }
+        }, 400);
+
+        // --- Asynchronous Live Web API Fetch ---
+        async function fetchWebData() {
+            try {
+                const res = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,solana,dogecoin&vs_currencies=usd');
+                const data = await res.json();
+                document.getElementById('v11').innerText = "$" + data.bitcoin.usd.toLocaleString();
+                document.getElementById('d11').innerText = "Live Market Price";
+                document.getElementById('v12').innerText = "$" + data.ethereum.usd.toLocaleString();
+                document.getElementById('d12').innerText = "Live Market Price";
+                document.getElementById('v13').innerText = "$" + data.solana.usd.toLocaleString();
+                document.getElementById('d13').innerText = "Live Market Price";
+                document.getElementById('v14').innerText = "$" + data.dogecoin.usd.toFixed(3);
+                document.getElementById('d14').innerText = "Live Market Price";
+            } catch(e){}
+
+            try {
+                const res = await fetch('https://ipapi.co/json/');
+                const data = await res.json();
+                document.getElementById('v15').innerText = data.city || "Unknown";
+                document.getElementById('d15').innerText = data.org;
+                document.getElementById('v16').innerText = data.country_code;
+                document.getElementById('d16').innerText = data.country_name;
+                document.getElementById('v18').innerText = data.currency;
+
+                const wRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${data.latitude}&longitude=${data.longitude}&current_weather=true`);
+                const wData = await wRes.json();
+                document.getElementById('v17').innerText = ((wData.current_weather.temperature * 9/5) + 32).toFixed(1) + "°F";
+                document.getElementById('d17').innerText = wData.current_weather.temperature + "°C Local";
+            } catch(e){}
+
+            try {
+                const res = await fetch('https://uselessfacts.jsph.pl/random.json?language=en');
+                const data = await res.json();
+                document.getElementById('v19').innerText = data.text.length > 50 ? data.text.substring(0, 47) + "..." : data.text;
+            } catch(e){}
+        }
+
+        loadSystemData();
+        fetchWebData();
+    </script>
+</body>
+</html>
