@@ -185,6 +185,7 @@
             <input type="range" id="blur-slider" class="slider" min="0" max="40" value="20">
         </div>
         <button class="btn" id="music-btn" onclick="toggleMusic()">Music(beta. example music.)</button>
+                <button class="btn" id="music-btn" onclick="!document.fullscreenElement ? document.documentElement.requestFullscreen() : document.exitFullscreen()">Go FullScreen</button>
     </div>
 
     <div class="ios-clock-container">
