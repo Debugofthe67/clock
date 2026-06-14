@@ -47,7 +47,6 @@
             overflow-x: hidden;
         }
 
-        /* Master Control Dashboard Panel */
         .top-bar {
             position: sticky;
             top: 10px;
@@ -119,7 +118,6 @@
             outline: none;
         }
 
-        /* Dynamic Island Engine Configuration */
         .dynamic-island-container {
             width: 100%;
             display: flex;
@@ -146,11 +144,11 @@
             padding: 0 12px;
         }
 
-        /* Liquid Multi-State Structural Widths */
         .dynamic-island.state-search { width: 350px; height: 50px; border-radius: 25px; }
         .dynamic-island.state-media { width: 380px; height: 75px; border-radius: 28px; }
         .dynamic-island.state-upload { width: 400px; height: 110px; border-radius: 30px; }
         .dynamic-island.state-settings { width: 460px; height: 320px; border-radius: 32px; }
+        .dynamic-island.state-siri { width: 320px; height: 70px; border-radius: 25px; }
 
         .island-content-wrapper {
             width: 100%;
@@ -188,7 +186,10 @@
             justify-content: center;
         }
 
-        /* Settings Shell Grid Template */
+        /* Siri Canvas Layout */
+        .siri-panel { flex-direction: column; width: 100%; height: 100%; justify-content: center; position: relative; }
+        .siri-canvas { width: 100%; height: 35px; background: transparent; }
+
         .settings-container-layout {
             display: flex;
             flex-direction: column;
@@ -219,7 +220,6 @@
         .setting-row input[type="checkbox"] { cursor: pointer; }
         .setting-row select { background: #111; color: #fff; border: none; font-size: 0.7rem; padding: 2px 4px; border-radius: 4px; }
 
-        /* Hardware GPU Probe Structural Frame */
         .bench-window {
             position: fixed;
             top: 20px;
@@ -240,7 +240,6 @@
         }
         .bench-window.open { width: 360px; height: 440px; opacity: 1; padding: 20px; }
 
-        /* Interactive Custom Dashboard Components */
         .cc-grid-button-box { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; width: 100%; height: 100%; }
         .cc-btn-node { background: rgba(255,255,255,0.1); border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 600; cursor: pointer; border: 1px solid rgba(255,255,255,0.05); }
         .cc-btn-node.active { background: #007aff; }
@@ -252,7 +251,6 @@
         .stack-dot { width: 5px; height: 5px; background: rgba(255,255,255,0.3); border-radius: 50%; cursor: pointer; }
         .stack-dot.active { background: #fff; }
 
-        /* Structural Framework Configurations */
         .left-drag-zone { position: fixed; top: 0; left: 0; width: 20px; height: 100vh; z-index: 1001; cursor: ew-resize; }
         .ios-clock-container { text-align: center; margin: 5px 0 25px 0; }
         .ios-date { font-size: 1.1rem; text-transform: uppercase; letter-spacing: 2px; font-weight: 600; margin-bottom: 3px; }
@@ -313,7 +311,8 @@
         </div>
         <button class="btn" onclick="triggerIslandState('search')">🔍 Search</button>
         <button class="btn" onclick="triggerIslandState('media')">🎵 Media</button>
-        <button class="btn" onclick="triggerIslandState('settings')">⚙️ System Settings</button>
+        <button class="btn" onclick="toggleVoiceToSearch()" style="background:#ff2d55;" id="vts-master-btn">🎤 VoiceToSearch (Beta)</button>
+        <button class="btn" onclick="triggerIslandState('settings')">⚙️ Settings Console</button>
         <button class="btn" id="edit-layout-btn" onclick="toggleEditMode()">🛠️ Edit Layout</button>
         <div class="control-group" id="add-panel" style="display:none;">
             <select id="widget-pool-select" class="add-select"></select>
@@ -335,6 +334,11 @@
                 <button class="search-go-btn" onclick="executeGoogleSearch()" style="margin-left:8px;">➔</button>
             </div>
 
+            <div class="island-content-wrapper siri-panel" id="content-siri">
+                <span id="siri-transcript-node" style="font-size:0.7rem; font-weight:600; opacity:0.8; letter-spacing:0.5px; text-align:center;">Listening to Voice Input...</span>
+                <canvas class="siri-canvas" id="siri-wave-canvas"></canvas>
+            </div>
+
             <div class="island-content-wrapper" id="content-media" style="flex-direction:column; gap:4px; width:100%;">
                 <div style="display:flex; justify-content:space-between; width:100%; font-size:0.75rem; font-weight:bold; padding:0 10px;">
                     <span id="media-title-label">SoundHelix Stream</span>
@@ -352,15 +356,15 @@
                     <button class="btn" onclick="loadAssetUrl()" style="padding:4px 8px;">Load</button>
                 </div>
                 <div style="display:flex; gap:10px; justify-content:center; width:100%;">
-                    <label class="btn" style="padding:3px 8px; font-size:0.7rem; margin:0;"><input type="file" id="audio-file-hook" accept="audio/*" onchange="uploadAudioAsset(event)" style="display:none;">📁 Add MP3</label>
-                    <label class="btn" style="padding:3px 8px; font-size:0.7rem; margin:0;"><input type="file" id="video-file-hook" accept="video/*" onchange="uploadVideoAsset(event)" style="display:none;">🎬 Add Video</label>
+                    <label class="btn" style="padding:3px 8px; font-size:0.7rem; margin:0; cursor:pointer;">📁 Upload MP3 <input type="file" id="audio-file-hook" accept="audio/mpeg,audio/mp3,audio/*" onchange="uploadAudioAsset(event)" style="display:none;"></label>
+                    <label class="btn" style="padding:3px 8px; font-size:0.7rem; margin:0; cursor:pointer;">🎬 Upload Video <input type="file" id="video-file-hook" accept="video/mp4,video/*" onchange="uploadVideoAsset(event)" style="display:none;"></label>
                 </div>
             </div>
 
             <div class="island-content-wrapper" id="content-settings" style="width:100%; height:100%;">
                 <div class="settings-container-layout">
-                    <div style="display:flex; justify-content:between; width:100%; font-size:0.8rem; font-weight:bold; margin-bottom:6px; border-bottom:1px solid #222; padding-bottom:3px;">
-                        <span>ENVIRONMENT DEPLOYMENT SETTINGS console</span>
+                    <div style="display:flex; justify-content:space-between; width:100%; font-size:0.75rem; font-weight:bold; margin-bottom:6px; border-bottom:1px solid #222; padding-bottom:3px;">
+                        <span>ENVIRONMENT DEPLOYMENT SYSTEM (60 OPTIONS)</span>
                     </div>
                     <div class="settings-grid-pane">
                         <div class="setting-row"><span>1. Active Background</span><input type="checkbox" checked onchange="setOpt(1, this.checked)"></div>
@@ -393,13 +397,39 @@
                         <div class="setting-row"><span>26. Session Memory Stack</span><input type="checkbox" checked onchange="setOpt(26, this.checked)"></div>
                         <div class="setting-row"><span>27. Device Vector Scan</span><input type="checkbox" onchange="setOpt(27, this.checked)"></div>
                         <div class="setting-row"><span>28. Reduce Canvas Blur</span><input type="checkbox" onchange="setOpt(28, this.checked)"></div>
-                        <div class="setting-row"><span>29. Strict Token Rules</span><input type="checkbox" onchange="setOpt(29, this.checked)"></div>
+                        <div class="setting-row"><span>29. Strict Token Rules</span><input type="checkbox" checked onchange="setOpt(29, this.checked)"></div>
                         <div class="setting-row"><span>30. Hardware Thread Cap</span><input type="checkbox" checked onchange="setOpt(30, this.checked)"></div>
                         <div class="setting-row"><span>31. Lock Aspect Scaling</span><input type="checkbox" checked onchange="setOpt(31, this.checked)"></div>
                         <div class="setting-row"><span>32. Live Feed Animation</span><input type="checkbox" checked onchange="setOpt(32, this.checked)"></div>
                         <div class="setting-row"><span>33. Fallback Fonts Array</span><input type="checkbox" checked onchange="setOpt(33, this.checked)"></div>
                         <div class="setting-row"><span>34. Dynamic Island Edge</span><input type="checkbox" checked onchange="setOpt(34, this.checked)"></div>
                         <div class="setting-row"><span>35. Build Mode Engine</span><input type="checkbox" onchange="setOpt(35, this.checked)"></div>
+
+                        <div class="setting-row"><span>36. Android Haptic Sync</span><input type="checkbox" onchange="setOpt(36, this.checked)"></div>
+                        <div class="setting-row"><span>37. iOS Smooth Bounce</span><input type="checkbox" checked onchange="setOpt(37, this.checked)"></div>
+                        <div class="setting-row"><span>38. Material You Tint</span><input type="checkbox" onchange="setOpt(38, this.checked)"></div>
+                        <div class="setting-row"><span>39. OLED Pure Black</span><input type="checkbox" onchange="setOpt(39, this.checked)"></div>
+                        <div class="setting-row"><span>40. Blur Optimization</span><input type="checkbox" checked onchange="setOpt(40, this.checked)"></div>
+                        <div class="setting-row"><span>41. Frame Rate Cap 60hz</span><input type="checkbox" onchange="setOpt(41, this.checked)"></div>
+                        <div class="setting-row"><span>42. Thermal Limiter</span><input type="checkbox" checked onchange="setOpt(42, this.checked)"></div>
+                        <div class="setting-row"><span>43. Low Power Battery</span><input type="checkbox" onchange="setOpt(43, this.checked)"></div>
+                        <div class="setting-row"><span>44. Cache Asset Buffers</span><input type="checkbox" checked onchange="setOpt(44, this.checked)"></div>
+                        <div class="setting-row"><span>45. Auto Clear Logs</span><input type="checkbox" onchange="setOpt(45, this.checked)"></div>
+                        <div class="setting-row"><span>46. Sub-Pixel Text Smooth</span><input type="checkbox" checked onchange="setOpt(46, this.checked)"></div>
+                        <div class="setting-row"><span>47. Secure Storage Crypt</span><input type="checkbox" onchange="setOpt(47, this.checked)"></div>
+                        <div class="setting-row"><span>48. Smart Stack Carousel</span><input type="checkbox" checked onchange="setOpt(48, this.checked)"></div>
+                        <div class="setting-row"><span>49. Swipe Sensor Scope</span><select onchange="setOpt(49, this.value)"><option value="20">20px</option><option value="50">50px</option></select></div>
+                        <div class="setting-row"><span>50. Dynamic Canvas Multi</span><select onchange="setOpt(50, this.value)"><option value="1">1x</option><option value="2">2x</option></select></div>
+                        <div class="setting-row"><span>51. Micro-Haptic Weight</span><select onchange="setOpt(51, this.value)"><option value="light">Light</option><option value="heavy">Heavy</option></select></div>
+                        <div class="setting-row"><span>52. Status Network Flag</span><select onchange="setOpt(52, this.value)"><option value="LTE">5G / LTE</option><option value="WiFi">WiFi Core</option></select></div>
+                        <div class="setting-row"><span>53. Gesture Gravity Snap</span><input type="checkbox" checked onchange="setOpt(53, this.checked)"></div>
+                        <div class="setting-row"><span>54. DNS Resolution Proxy</span><input type="checkbox" onchange="setOpt(54, this.checked)"></div>
+                        <div class="setting-row"><span>55. CORS Proxy Bypass</span><input type="checkbox" onchange="setOpt(55, this.checked)"></div>
+                        <div class="setting-row"><span>56. Frame Buffering Sync</span><input type="checkbox" checked onchange="setOpt(56, this.checked)"></div>
+                        <div class="setting-row"><span>57. Audio Stream Compressor</span><input type="checkbox" onchange="setOpt(57, this.checked)"></div>
+                        <div class="setting-row"><span>58. Siri Filter Response</span><input type="checkbox" checked onchange="setOpt(58, this.checked)"></div>
+                        <div class="setting-row"><span>59. Beta Experimental Hooks</span><input type="checkbox" checked onchange="setOpt(59, this.checked)"></div>
+                        <div class="setting-row"><span>60. Runtime Profiler Node</span><input type="checkbox" onchange="setOpt(60, this.checked)"></div>
                     </div>
                 </div>
             </div>
@@ -408,7 +438,7 @@
     </div>
 
     <div class="bench-window" id="bench-box">
-        <h3 style="margin-bottom:10px; letter-spacing:1px; font-size:1rem;">HARDWARE PROBE</h2>
+        <h3 style="margin-bottom:10px; letter-spacing:1px; font-size:1rem;">HARDWARE PROBE</h3>
         <canvas id="bench-canvas" width="200" height="130" style="background:#111; border-radius:12px; margin-bottom:15px; border:1px solid #333;"></canvas>
         <button class="btn" id="run-bench-btn" style="background:#34c759; margin-bottom:15px; width:80%; justify-content:center;" onclick="startGpuTest()">Run Stress Test</button>
         <div id="bench-output" style="text-align:center; font-family:monospace; font-size:0.85rem; line-height:1.4;">
@@ -500,7 +530,7 @@
         <div class="widget" id="wd-47" draggable="false"><div class="remove-badge" onclick="hideWidget('wd-47')">−</div><div class="widget-title">ServiceWorker</div><div class="widget-value" id="v47">--</div><div class="widget-desc">Background Worker</div></div>
         <div class="widget" id="wd-48" draggable="false"><div class="remove-badge" onclick="hideWidget('wd-48')">−</div><div class="widget-title">Geolocation</div><div class="widget-value" id="v48">--</div><div class="widget-desc">GPS Core Flag</div></div>
         <div class="widget" id="wd-49" draggable="false"><div class="remove-badge" onclick="hideWidget('wd-49')">−</div><div class="widget-title">Encoding</div><div class="widget-value" id="v49">--</div><div class="widget-desc">Character Set</div></div>
-        <div class="widget" id="wd-50" draggable="false"><div class="remove-badge" onclick="hideWidget('wd-50')">−</div><div class="widget-title">OS Build</div><div class="widget-value">v2.3.0</div><div class="widget-desc">iWidgetOS Stable</div></div>
+        <div class="widget" id="wd-50" draggable="false"><div class="remove-badge" onclick="hideWidget('wd-50')">−</div><div class="widget-title">OS Build</div><div class="widget-value">v2.4.0</div><div class="widget-desc">iWidgetOS Stable</div></div>
     </div>
 
     <script>
@@ -511,18 +541,17 @@
             'search': document.getElementById('content-search'),
             'media': document.getElementById('content-media'),
             'upload': document.getElementById('content-upload'),
-            'settings': document.getElementById('content-settings')
+            'settings': document.getElementById('content-settings'),
+            'siri': document.getElementById('content-siri')
         };
         let activeIslandState = 'default';
         let edgeSweepSetting = 'search';
 
         function triggerIslandState(targetState) {
-            // Remove previous style state signatures
-            islandNode.classList.remove('state-search', 'state-media', 'state-upload', 'state-settings');
+            islandNode.classList.remove('state-search', 'state-media', 'state-upload', 'state-settings', 'state-siri');
             Object.keys(wrappers).forEach(k => wrappers[k].classList.remove('show-content'));
 
             if(activeIslandState === targetState && targetState !== 'default') {
-                // Clicking active item twice collapses state naturally
                 activeIslandState = 'default';
             } else {
                 activeIslandState = targetState;
@@ -533,22 +562,22 @@
                 setTimeout(() => {
                     wrappers[activeIslandState].classList.add('show-content');
                     if(activeIslandState === 'search') document.getElementById('google-query').focus();
+                    if(activeIslandState === 'siri') startSiriAnimationLoop();
                 }, 150);
             } else {
                 wrappers['default'].classList.add('show-content');
+                stopSiriVoiceEngine();
             }
         }
 
-        // Collapse parameters if target coordinates exit focal context boundary 
         document.addEventListener('click', function(e) {
             const isClickInsideIsland = islandNode.contains(e.target);
             const isTopBarBtn = e.target.closest('.top-bar');
-            if (!isClickInsideIsland && !isTopBarBtn && activeIslandState !== 'default') {
+            if (!isClickInsideIsland && !isTopBarBtn && activeIslandState !== 'default' && activeIslandState !== 'siri') {
                 triggerIslandState('default');
             }
         });
 
-        // Search Handlers
         function executeGoogleSearch() {
             const q = document.getElementById('google-query').value.trim();
             if (q !== "") {
@@ -559,7 +588,117 @@
         }
         function handleSearchKey(e) { if (e.key === 'Enter') executeGoogleSearch(); }
 
-        // Audio Tracking & Asset Payload Processors
+        // --- VoiceToSearch (Beta) Engine Architecture ---
+        let recognitionEngine = null;
+        let siriAnimationId = null;
+        const siriCanvas = document.getElementById('siri-wave-canvas');
+        const siriCtx = siriCanvas.getContext('2d');
+        let siriWavePhase = 0;
+
+        function toggleVoiceToSearch() {
+            const masterVtsBtn = document.getElementById('vts-master-btn');
+            if (activeIslandState !== 'siri') {
+                triggerIslandState('siri');
+                masterVtsBtn.innerText = "🛑 Stop Listening";
+                masterVtsBtn.style.background = "#34c759";
+                initializeSpeechRecognition();
+            } else {
+                triggerIslandState('default');
+                masterVtsBtn.innerText = "🎤 VoiceToSearch (Beta)";
+                masterVtsBtn.style.background = "#ff2d55";
+            }
+        }
+
+        function initializeSpeechRecognition() {
+            const SpeechLib = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SpeechLib) {
+                document.getElementById('siri-transcript-node').innerText = "Web Speech API Not Supported";
+                return;
+            }
+            recognitionEngine = new SpeechLib();
+            recognitionEngine.continuous = false;
+            recognitionEngine.interimResults = false;
+            recognitionEngine.lang = 'en-US';
+
+            recognitionEngine.onstart = () => {
+                document.getElementById('siri-transcript-node').innerText = "Speak now...";
+            };
+
+            recognitionEngine.onerror = (err) => {
+                document.getElementById('siri-transcript-node').innerText = "Voice Error or Timeout";
+                setTimeout(() => toggleVoiceToSearch(), 1500);
+            };
+
+            recognitionEngine.onresult = (event) => {
+                const spokenOutput = event.results[0][0].transcript;
+                document.getElementById('siri-transcript-node').innerText = `"${spokenOutput}"`;
+                setTimeout(() => {
+                    window.open(`https://www.google.com/search?q=${encodeURIComponent(spokenOutput)}`, '_blank');
+                    toggleVoiceToSearch();
+                }, 800);
+            };
+
+            recognitionEngine.start();
+        }
+
+        function stopSiriVoiceEngine() {
+            if (recognitionEngine) {
+                recognitionEngine.abort();
+                recognitionEngine = null;
+            }
+            if (siriAnimationId) {
+                cancelAnimationFrame(siriAnimationId);
+                siriAnimationId = null;
+            }
+            const masterVtsBtn = document.getElementById('vts-master-btn');
+            if(masterVtsBtn) {
+                masterVtsBtn.innerText = "🎤 VoiceToSearch (Beta)";
+                masterVtsBtn.style.background = "#ff2d55";
+            }
+        }
+
+        function startSiriAnimationLoop() {
+            siriCanvas.width = siriCanvas.offsetWidth;
+            siriCanvas.height = siriCanvas.offsetHeight;
+            
+            function renderSiriWaves() {
+                siriCtx.clearRect(0, 0, siriCanvas.width, siriCanvas.height);
+                siriWavePhase += 0.15;
+                
+                // Render 3 overlapping fluid dynamic color wave paths
+                drawSineWave("#007aff", 0.6, 3, 2);
+                drawSineWave("#ff2d55", 0.5, 4, -1.5);
+                drawSineWave("#34c759", 0.4, 2, 1);
+                
+                siriAnimationId = requestAnimationFrame(renderSiriWaves);
+            }
+            siriAnimationId = requestAnimationFrame(renderSiriWaves);
+        }
+
+        function drawSineWave(color, opacity, amplitude, speedMod) {
+            siriCtx.save();
+            siriCtx.beginPath();
+            siriCtx.strokeStyle = color;
+            siriCtx.globalAlpha = opacity;
+            siriCtx.lineWidth = 2.5;
+
+            const w = siriCanvas.width;
+            const h = siriCanvas.height;
+            const midY = h / 2;
+
+            for (let x = 0; x < w; x++) {
+                // Generates smooth sinusoidal tracking parameters
+                const angle = (x / w) * Math.PI * 2.5 + (siriWavePhase * speedMod);
+                const y = midY + Math.sin(angle) * (amplitude * Math.sin(x / w * Math.PI));
+                if (x === 0) siriCtx.moveTo(x, y);
+                else siriCtx.lineTo(x, y);
+            }
+            siriCtx.stroke();
+            siriCtx.restore();
+        }
+
+
+        // --- Audio Tracking & Asynchronous Asset File Converters ---
         const track = document.getElementById('bg-music');
         const vNode = document.getElementById('bg-video-node');
         let playing = false;
@@ -568,11 +707,8 @@
         function toggleMasterMusic() {
             const islandBtn = document.getElementById('island-play-btn');
             if(!playing) {
-                if(isVideoActive) {
-                    vNode.play();
-                } else {
-                    track.play();
-                }
+                if(isVideoActive) vNode.play();
+                else track.play();
                 islandBtn.innerText = "Mute";
                 playing = true;
             } else {
@@ -604,22 +740,31 @@
             }
         }
 
+        // Asynchronous ArrayBuffer reader bypassing local sandbox MIME verification limits
         function uploadAudioAsset(e) {
             const file = e.target.files[0];
             if(file) {
-                track.src = URL.createObjectURL(file);
-                document.getElementById('media-title-label').innerText = file.name.substring(0, 16);
-                isVideoActive = false;
-                vNode.style.display = 'none';
-                playing = false; toggleMasterMusic();
-                triggerIslandState('media');
+                const reader = new FileReader();
+                reader.onload = function(evt) {
+                    track.src = evt.target.result;
+                    document.getElementById('media-title-label').innerText = file.name.substring(0, 16);
+                    isVideoActive = false;
+                    vNode.style.display = 'none';
+                    playing = false; toggleMasterMusic();
+                    triggerIslandState('media');
+                };
+                reader.readAsDataURL(file);
             }
         }
 
         function uploadVideoAsset(e) {
             const file = e.target.files[0];
             if(file) {
-                setupVideoPipeline(URL.createObjectURL(file), file.name);
+                const reader = new FileReader();
+                reader.onload = function(evt) {
+                    setupVideoPipeline(evt.target.result, file.name);
+                };
+                reader.readAsDataURL(file);
             }
         }
 
@@ -634,7 +779,7 @@
         }
 
 
-        // --- Real 35 Parameter Matrix Configuration System Settings Engine ---
+        // --- Real 60 Parameter Matrix Configuration Settings Engine ---
         let configEngineOptions = {};
         let isContinuousLoop = true;
         let renderFractalIterations = 150;
@@ -643,8 +788,6 @@
 
         function setOpt(index, val) {
             configEngineOptions[index] = val;
-            
-            // Map live structural code overrides to specific active indices
             if(index === 1) document.body.style.background = val ? "var(--bg-gradient)" : "#111";
             if(index === 2) document.documentElement.style.setProperty('--widget-bg', val ? "rgba(0,0,0,0.8)" : `rgba(255, 255, 255, ${document.getElementById('tint-slider').value / 100})`);
             if(index === 3) isContinuousLoop = val;
@@ -653,10 +796,18 @@
             if(index === 14) renderFractalIterations = parseInt(val);
             if(index === 15) edgeSweepSetting = val;
             if(index === 17) temperatureDisplayUnit = val;
+            if(index === 39) {
+                if(val) {
+                    document.documentElement.style.setProperty('--bg-gradient', 'linear-gradient(135deg, #000 0%, #000 100%)');
+                    document.body.style.background = "#000000";
+                } else {
+                    document.documentElement.style.setProperty('--bg-gradient', 'linear-gradient(135deg, #111827 0%, #1f2937 50%, #111827 100%)');
+                }
+            }
         }
 
 
-        // --- Layout Grid Sorting & Arrangement Engine (Jiggle & Drop) ---
+        // --- Layout Grid Sorting & Arrangement Engine ---
         let isEditMode = false;
         const mainGrid = document.getElementById('main-app-grid');
         const hiddenWidgetsPool = {};
@@ -675,7 +826,7 @@
                 editBtn.classList.add('active-mode'); editBtn.innerText = "🛑 Done";
                 addPanel.style.display = "flex"; rebuildDropdownPool();
             } else {
-                editBtn.classList.remove('active-mode'); editBtn.innerText = "🛠️ Edit";
+                editBtn.classList.remove('active-mode'); editBtn.innerText = "🛠️ Edit Layout";
                 addPanel.style.display = "none";
             }
         }
@@ -721,7 +872,7 @@
         });
 
 
-        // --- Smart Stack Rotator Interface Controller ---
+        // --- Smart Stack Rotator ---
         let currentStackIdx = 0;
         function setStackIndex(idx) {
             currentStackIdx = idx;
@@ -731,7 +882,7 @@
             dots.forEach((d, i) => d.classList.toggle('active', i === idx));
         }
 
-        // --- Interactive Simulated Control Center Commands ---
+        // --- Interactive Control Center Suite Commands ---
         let isWiFiConnected = true;
         function toggleCcWiFi() {
             isWiFiConnected = !isWiFiConnected;
@@ -803,7 +954,7 @@
         }
 
 
-        // --- Gestural Left Side Swipe Detector Interface ---
+        // --- Gestural Edge Swipe Detector Interface ---
         const dragZone = document.getElementById('drag-zone');
         let touchStartX = 0;
         dragZone.addEventListener('touchstart', (e) => touchStartX = e.touches[0].clientX);
@@ -865,16 +1016,6 @@
             document.getElementById('v47').innerText = ('serviceWorker' in navigator) ? "Supported" : "Unsupported";
             document.getElementById('v48').innerText = (navigator.geolocation) ? "Supported" : "No GPS";
             document.getElementById('v49').innerText = document.characterSet;
-
-            if(navigator.getBattery) {
-                navigator.getBattery().then(b => {
-                    const updateB = () => {
-                        document.getElementById('v1').innerText = Math.floor(b.level * 100) + "%";
-                        document.getElementById('d1').innerText = b.charging ? "⚡ Charging" : "Discharging";
-                    };
-                    updateB(); b.addEventListener('levelchange', updateB); b.addEventListener('chargingchange', updateB);
-                });
-            }
         }
 
         setInterval(() => {
