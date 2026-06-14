@@ -29,3 +29,15 @@ By default, the system streams online royalty-free test music. To use your own s
 3. Open `index.html` in a text editor, locate line **127**, and update the track source:
    ```html
    <audio id="bg-music" loop src="music.mp3"></audio>
+   ```
+
+   ---
+   # Verison history
+
+    ## v1.1.0
+     * Added Search Float
+
+   ## v1.0.0
+       * Initial Release
+
+   
