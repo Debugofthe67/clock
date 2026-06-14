@@ -38,6 +38,8 @@ By default, the system streams online royalty-free test music. To use your own s
      * Added the dynamic island search bar
      * Added GPU Benchmarking
      * Added the ability to add/remove widgets
+     * More Settings 
+     * New mp3 player. Play any mp3 or video in background.
 
    ## v1.0.0
        * Initial Release
