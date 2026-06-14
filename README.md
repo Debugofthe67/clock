@@ -36,6 +36,8 @@ By default, the system streams online royalty-free test music. To use your own s
 
     ## v1.1.0
      * Added the dynamic island search bar
+     * Added GPU Benchmarking
+     * Added the ability to add/remove widgets
 
    ## v1.0.0
        * Initial Release
