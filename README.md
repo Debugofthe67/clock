@@ -35,7 +35,7 @@ By default, the system streams online royalty-free test music. To use your own s
    # Verison history
 
     ## v1.1.0
-     * Added Search Float
+     * Added the dynamic island search bar
 
    ## v1.0.0
        * Initial Release
