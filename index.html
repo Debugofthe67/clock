@@ -18,13 +18,14 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 
             <link rel="apple-touch-icon" sizes="180x180" href="https://cdn-icons-png.flaticon.com/512/11244/11244686.png">
-
+</head>
     <style>
         :root {
             --bg-gradient: linear-gradient(135deg, #111827 0%, #1f2937 50%, #111827 100%);
             --widget-bg: rgba(255, 255, 255, 0.1);
             --widget-blur: 20px;
             --text-color: #ffffff;
+            --global-font-scale: 1;
         }
 
         * {
@@ -46,14 +47,14 @@
             overflow-x: hidden;
         }
 
-        /* Top Bar Controls Panel */
+        /* Master Control Dashboard Panel */
         .top-bar {
             position: sticky;
             top: 10px;
             z-index: 999;
             display: flex;
             flex-wrap: wrap;
-            gap: 12px;
+            gap: 10px;
             background: rgba(0, 0, 0, 0.6);
             padding: 12px 24px;
             border-radius: 30px;
@@ -67,15 +68,15 @@
         .control-group {
             display: flex;
             align-items: center;
-            gap: 10px;
-            font-size: 0.9rem;
+            gap: 8px;
+            font-size: 0.85rem;
         }
 
         .slider {
             -webkit-appearance: none;
             appearance: none;
-            width: 90px;
-            height: 6px;
+            width: 70px;
+            height: 5px;
             border-radius: 5px;
             background: rgba(255,255,255,0.3);
             outline: none;
@@ -84,84 +85,83 @@
         .slider::-webkit-slider-thumb {
             -webkit-appearance: none;
             appearance: none;
-            width: 14px;
-            height: 14px;
+            width: 12px;
+            height: 12px;
             border-radius: 50%;
             background: white;
             cursor: pointer;
         }
 
         .btn {
-            background: rgba(255, 255, 255, 0.15);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.18);
             color: white;
-            padding: 6px 14px;
+            padding: 6px 12px;
             border-radius: 20px;
             cursor: pointer;
             font-weight: 600;
             transition: all 0.2s ease;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
         }
-        .btn:hover { background: rgba(255, 255, 255, 0.3); }
+        .btn:hover { background: rgba(255, 255, 255, 0.25); }
         .btn.active-mode { background: #34c759; border-color: #30b34e; }
 
         .add-select {
             background: #000;
             color: #fff;
             border: 1px solid rgba(255,255,255,0.3);
-            padding: 5px 10px;
-            border-radius: 15px;
-            font-size: 0.85rem;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
             outline: none;
         }
 
-        /* Dynamic Island - Search Engine */
+        /* Dynamic Island Engine Configuration */
         .dynamic-island-container {
             width: 100%;
             display: flex;
-            justify-content: center;
-            margin-bottom: 10px;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 15px;
             position: relative;
             z-index: 1000;
+            gap: 10px;
         }
 
         .dynamic-island {
             background: #000000;
             color: #ffffff;
-            width: 110px;
-            height: 30px;
-            border-radius: 20px;
+            width: 120px;
+            height: 32px;
+            border-radius: 22px;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1);
             overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            padding: 0 10px;
+            box-shadow: 0 12px 35px rgba(0,0,0,0.6);
+            padding: 0 12px;
         }
 
-        .dynamic-island.active {
-            width: 340px;
-            height: 48px;
-            border-radius: 24px;
-        }
+        /* Liquid Multi-State Structural Widths */
+        .dynamic-island.state-search { width: 350px; height: 50px; border-radius: 25px; }
+        .dynamic-island.state-media { width: 380px; height: 75px; border-radius: 28px; }
+        .dynamic-island.state-upload { width: 400px; height: 110px; border-radius: 30px; }
+        .dynamic-island.state-settings { width: 460px; height: 320px; border-radius: 32px; }
 
-        .island-compact {
-            font-size: 0.75rem;
-            font-weight: 600;
-            letter-spacing: 0.5px;
-            white-space: nowrap;
-        }
-        .dynamic-island.active .island-compact { display: none; }
-
-        .island-expanded {
-            display: none;
+        .island-content-wrapper {
             width: 100%;
+            height: 100%;
+            display: none;
             align-items: center;
-            gap: 10px;
+            justify-content: center;
             opacity: 0;
+            transition: opacity 0.3s ease;
         }
-        .dynamic-island.active .island-expanded { display: flex; opacity: 1; }
+        .show-content { display: flex; opacity: 1; }
 
         .search-input {
             flex: 1;
@@ -171,15 +171,15 @@
             padding: 6px 12px;
             border-radius: 15px;
             color: white;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
         }
 
         .search-go-btn {
             background: #ffffff;
             border: none;
             color: #000000;
-            width: 28px;
-            height: 28px;
+            width: 26px;
+            height: 26px;
             border-radius: 50%;
             cursor: pointer;
             font-weight: bold;
@@ -188,7 +188,38 @@
             justify-content: center;
         }
 
-        /* Real GPU Benchmarker - Liquid Popup */
+        /* Settings Shell Grid Template */
+        .settings-container-layout {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            height: 100%;
+            padding: 10px 5px;
+        }
+        .settings-grid-pane {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 6px;
+            overflow-y: auto;
+            flex: 1;
+            padding-right: 4px;
+        }
+        .settings-grid-pane::-webkit-scrollbar { width: 4px; }
+        .settings-grid-pane::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 2px; }
+
+        .setting-row {
+            background: rgba(255,255,255,0.08);
+            padding: 6px 10px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 0.75rem;
+        }
+        .setting-row input[type="checkbox"] { cursor: pointer; }
+        .setting-row select { background: #111; color: #fff; border: none; font-size: 0.7rem; padding: 2px 4px; border-radius: 4px; }
+
+        /* Hardware GPU Probe Structural Frame */
         .bench-window {
             position: fixed;
             top: 20px;
@@ -207,34 +238,26 @@
             padding: 0;
             color: white;
         }
+        .bench-window.open { width: 360px; height: 440px; opacity: 1; padding: 20px; }
 
-        .bench-window.open {
-            width: 360px;
-            height: 440px;
-            opacity: 1;
-            padding: 20px;
-        }
+        /* Interactive Custom Dashboard Components */
+        .cc-grid-button-box { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; width: 100%; height: 100%; }
+        .cc-btn-node { background: rgba(255,255,255,0.1); border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 600; cursor: pointer; border: 1px solid rgba(255,255,255,0.05); }
+        .cc-btn-node.active { background: #007aff; }
 
-        /* Gestural Drag Sensing Strip */
-        .left-drag-zone {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 20px;
-            height: 100vh;
-            z-index: 1001;
-            cursor: ew-resize;
-        }
+        .smart-stack-frame { width: 100%; height: 100%; position: relative; overflow: hidden; }
+        .stack-layer { position: absolute; width: 100%; height: 100%; display: none; flex-direction: column; justify-content: space-between; transition: opacity 0.2s ease; }
+        .stack-layer.active { display: flex; }
+        .stack-nav-indicators { position: absolute; right: 0; top: 40%; display: flex; flex-direction: column; gap: 4px; z-index: 5; }
+        .stack-dot { width: 5px; height: 5px; background: rgba(255,255,255,0.3); border-radius: 50%; cursor: pointer; }
+        .stack-dot.active { background: #fff; }
 
-        /* iOS Clock Layout */
-        .ios-clock-container {
-            text-align: center;
-            margin: 10px 0 35px 0;
-        }
-        .ios-date { font-size: 1.2rem; text-transform: uppercase; letter-spacing: 2px; font-weight: 600; margin-bottom: 5px; }
-        .ios-clock { font-size: 5.5rem; font-weight: 700; line-height: 1; }
+        /* Structural Framework Configurations */
+        .left-drag-zone { position: fixed; top: 0; left: 0; width: 20px; height: 100vh; z-index: 1001; cursor: ew-resize; }
+        .ios-clock-container { text-align: center; margin: 5px 0 25px 0; }
+        .ios-date { font-size: 1.1rem; text-transform: uppercase; letter-spacing: 2px; font-weight: 600; margin-bottom: 3px; }
+        .ios-clock { font-size: 5rem; font-weight: 700; line-height: 1; }
 
-        /* Widget Grid Configuration */
         .widget-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
@@ -244,7 +267,6 @@
             padding-bottom: 60px;
         }
 
-        /* Base Widget Architecture */
         .widget {
             background: var(--widget-bg);
             border: 1px solid rgba(255, 255, 255, 0.15);
@@ -263,51 +285,22 @@
             transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
 
-        /* iOS Jiggle Keyframes & Classes */
-        @keyframes iosJiggle {
-            0% { transform: rotate(-1deg); }
-            50% { transform: rotate(1.5deg) scale(1.01); }
-            100% { transform: rotate(-1deg); }
-        }
-
-        .jiggling {
-            animation: iosJiggle 0.28s infinite ease-in-out;
-            cursor: grab;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
-            border: 1px dashed rgba(255,255,255,0.4);
-        }
-        .jiggling:active { cursor: grabbing; }
-
-        /* Remove Widget Badges */
-        .remove-badge {
-            position: absolute;
-            top: -6px;
-            left: -6px;
-            background: #ff3b30;
-            color: white;
-            width: 22px;
-            height: 22px;
-            border-radius: 50%;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            font-size: 14px;
-            cursor: pointer;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-            z-index: 10;
-        }
+        @keyframes iosJiggle { 0% { transform: rotate(-1deg); } 50% { transform: rotate(1.2deg) scale(1.01); } 100% { transform: rotate(-1deg); } }
+        .jiggling { animation: iosJiggle 0.28s infinite ease-in-out; cursor: grab; box-shadow: 0 8px 25px rgba(0,0,0,0.3); border: 1px dashed rgba(255,255,255,0.4); }
+        
+        .remove-badge { position: absolute; top: -6px; left: -6px; background: #ff3b30; color: white; width: 22px; height: 22px; border-radius: 50%; display: none; align-items: center; justify-content: center; font-weight: bold; font-size: 14px; cursor: pointer; z-index: 10; }
         .jiggling .remove-badge { display: flex; }
 
-        .widget-title { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; opacity: 0.6; font-weight: 700; pointer-events: none; }
-        .widget-value { font-size: 1.5rem; font-weight: 600; margin: 5px 0; word-break: break-all; pointer-events: none; }
-        .widget-desc { font-size: 0.75rem; opacity: 0.7; pointer-events: none; }
+        .widget-title { font-size: calc(0.75rem * var(--global-font-scale)); text-transform: uppercase; letter-spacing: 1px; opacity: 0.6; font-weight: 700; }
+        .widget-value { font-size: calc(1.4rem * var(--global-font-scale)); font-weight: 600; margin: 5px 0; word-break: break-all; }
+        .widget-desc { font-size: calc(0.75rem * var(--global-font-scale)); opacity: 0.7; }
     </style>
 </head>
 <body>
 
     <div class="left-drag-zone" id="drag-zone"></div>
     <audio id="bg-music" loop src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"></audio>
+    <video id="bg-video-node" loop style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; object-fit:cover; z-index:-2; opacity:0.4;"></video>
 
     <div class="top-bar">
         <div class="control-group">
@@ -318,37 +311,110 @@
             <label>Blur:</label>
             <input type="range" id="blur-slider" class="slider" min="0" max="40" value="20">
         </div>
-        <button class="btn" id="music-btn" onclick="toggleMusic()">🎵 Play Music</button>
-        <button class="btn" id="search-trigger-btn" onclick="toggleIsland()">🔍 Search</button>
-        
-        <button class="btn" id="edit-layout-btn" onclick="toggleEditMode()">⚙️ Edit Layout</button>
+        <button class="btn" onclick="triggerIslandState('search')">🔍 Search</button>
+        <button class="btn" onclick="triggerIslandState('media')">🎵 Media</button>
+        <button class="btn" onclick="triggerIslandState('settings')">⚙️ System Settings</button>
+        <button class="btn" id="edit-layout-btn" onclick="toggleEditMode()">🛠️ Edit Layout</button>
         <div class="control-group" id="add-panel" style="display:none;">
             <select id="widget-pool-select" class="add-select"></select>
-            <button class="btn" onclick="triggerAddWidget()">➕ Add</button>
+            <button class="btn" onclick="triggerAddWidget()">➕</button>
         </div>
-        
-        <button class="btn" style="background:#5856d6;" onclick="openBench()">🏎️ GPU Bench Probe</button>
-    </div>
-
-    <div class="bench-window" id="bench-box">
-        <h3 style="margin-bottom:10px; letter-spacing:1px;">HARDWARE ENGINE PROBE</h3>
-        <p style="font-size:0.8rem; opacity:0.7; margin-bottom:15px; text-align:center;">Renders a real structural mathematical Mandelbrot fractal to accurately score hardware frame draw processing latencies.</p>
-        <canvas id="bench-canvas" width="200" height="140" style="background:#111; border-radius:12px; margin-bottom:15px; border:1px solid #333;"></canvas>
-        <button class="btn" id="run-bench-btn" style="background:#34c759; margin-bottom:15px; width:80%;" onclick="startGpuTest()">Run Stress Test</button>
-        <div id="bench-output" style="text-align:center; font-family:monospace; font-size:0.9rem; line-height:1.5;">
-            Status: Idle Engine<br>Score: -- GPU-pts
-        </div>
-        <button class="btn" style="margin-top:auto; background:#ff3b30;" onclick="closeBench()">Dismiss Window</button>
+        <button class="btn" style="background:#5856d6;" onclick="openBench()">🏎️ GPU Bench</button>
+        <button class="btn" style="background:#24292e;" onclick="window.open('https://github.com/debugofthe67/clock/', '_blank')">🐙 GitHub</button>
     </div>
 
     <div class="dynamic-island-container">
-        <div class="dynamic-island" id="island-node" onclick="expandIslandExplicit()">
-            <div class="island-compact">iWidgetOS</div>
-            <div class="island-expanded">
-                <input type="text" id="google-query" class="search-input" placeholder="Search Google..." onkeydown="handleSearchKey(event)">
-                <button class="search-go-btn" onclick="executeGoogleSearch()">➔</button>
+        <div class="dynamic-island" id="island-node">
+            
+            <div class="island-content-wrapper show-content" id="content-default">
+                <span class="island-compact" style="font-size:0.75rem; font-weight:600; letter-spacing:0.5px;">iWidgetOS</span>
             </div>
+
+            <div class="island-content-wrapper" id="content-search">
+                <input type="text" id="google-query" class="search-input" placeholder="Search Google..." onkeydown="handleSearchKey(event)">
+                <button class="search-go-btn" onclick="executeGoogleSearch()" style="margin-left:8px;">➔</button>
+            </div>
+
+            <div class="island-content-wrapper" id="content-media" style="flex-direction:column; gap:4px; width:100%;">
+                <div style="display:flex; justify-content:space-between; width:100%; font-size:0.75rem; font-weight:bold; padding:0 10px;">
+                    <span id="media-title-label">SoundHelix Stream</span>
+                    <span id="media-time-label">0:00</span>
+                </div>
+                <div style="display:flex; gap:15px; align-items:center;">
+                    <button class="btn" onclick="toggleMasterMusic()" id="island-play-btn" style="padding:2px 8px; font-size:0.7rem;">Play</button>
+                    <button class="btn" onclick="triggerIslandState('upload')" style="padding:2px 8px; font-size:0.7rem; background:#007aff;">Upload Routing</button>
+                </div>
+            </div>
+
+            <div class="island-content-wrapper" id="content-upload" style="flex-direction:column; gap:6px; width:100%; padding:5px;">
+                <div style="display:flex; gap:4px; width:100%;">
+                    <input type="text" id="asset-url-field" class="search-input" placeholder="Paste Audio/Video Track URL...">
+                    <button class="btn" onclick="loadAssetUrl()" style="padding:4px 8px;">Load</button>
+                </div>
+                <div style="display:flex; gap:10px; justify-content:center; width:100%;">
+                    <label class="btn" style="padding:3px 8px; font-size:0.7rem; margin:0;"><input type="file" id="audio-file-hook" accept="audio/*" onchange="uploadAudioAsset(event)" style="display:none;">📁 Add MP3</label>
+                    <label class="btn" style="padding:3px 8px; font-size:0.7rem; margin:0;"><input type="file" id="video-file-hook" accept="video/*" onchange="uploadVideoAsset(event)" style="display:none;">🎬 Add Video</label>
+                </div>
+            </div>
+
+            <div class="island-content-wrapper" id="content-settings" style="width:100%; height:100%;">
+                <div class="settings-container-layout">
+                    <div style="display:flex; justify-content:between; width:100%; font-size:0.8rem; font-weight:bold; margin-bottom:6px; border-bottom:1px solid #222; padding-bottom:3px;">
+                        <span>ENVIRONMENT DEPLOYMENT SETTINGS console</span>
+                    </div>
+                    <div class="settings-grid-pane">
+                        <div class="setting-row"><span>1. Active Background</span><input type="checkbox" checked onchange="setOpt(1, this.checked)"></div>
+                        <div class="setting-row"><span>2. High Contrast UI</span><input type="checkbox" onchange="setOpt(2, this.checked)"></div>
+                        <div class="setting-row"><span>3. Continuous API Loop</span><input type="checkbox" checked onchange="setOpt(3, this.checked)"></div>
+                        <div class="setting-row"><span>4. Precision Chrono ms</span><input type="checkbox" checked onchange="setOpt(4, this.checked)"></div>
+                        <div class="setting-row"><span>5. Safe Overlay Grid</span><input type="checkbox" checked onchange="setOpt(5, this.checked)"></div>
+                        <div class="setting-row"><span>6. Dynamic Wave Visuals</span><input type="checkbox" onchange="setOpt(6, this.checked)"></div>
+                        <div class="setting-row"><span>7. Debug Console Mode</span><input type="checkbox" onchange="setOpt(7, this.checked)"></div>
+                        <div class="setting-row"><span>8. Secure Crypto Hooks</span><input type="checkbox" checked onchange="setOpt(8, this.checked)"></div>
+                        <div class="setting-row"><span>9. Smooth Jiggle Math</span><input type="checkbox" checked onchange="setOpt(9, this.checked)"></div>
+                        <div class="setting-row"><span>10. Video Aspect Match</span><input type="checkbox" checked onchange="setOpt(10, this.checked)"></div>
+                        
+                        <div class="setting-row"><span>11. Layout Matrix Scale</span><select onchange="setOpt(11, this.value)"><option value="1">100%</option><option value="0.85">85%</option><option value="1.15">115%</option></select></div>
+                        <div class="setting-row"><span>12. API Refresher Rate</span><select onchange="setOpt(12, this.value)"><option value="10">10s</option><option value="30">30s</option><option value="60">60s</option></select></div>
+                        <div class="setting-row"><span>13. Clock Frame Layout</span><select onchange="setOpt(13, this.value)"><option value="12">12 Hour</option><option value="24">24 Hour</option></select></div>
+                        <div class="setting-row"><span>14. Render Fractal Iter</span><select onchange="setOpt(14, this.value)"><option value="150">150</option><option value="50">50</option><option value="300">300</option></select></div>
+                        <div class="setting-row"><span>15. Edge Sweep Target</span><select onchange="setOpt(15, this.value)"><option value="search">Search</option><option value="media">Media</option></select></div>
+                        <div class="setting-row"><span>16. Currency Tracking</span><select onchange="setOpt(16, this.value)"><option value="USD">USD ($)</option><option value="EUR">EUR (€)</option></select></div>
+                        <div class="setting-row"><span>17. Temperature Scale</span><select onchange="setOpt(17, this.value)"><option value="F">Fahrenheit</option><option value="C">Celsius</option></select></div>
+                        <div class="setting-row"><span>18. Drop Shadow Weight</span><select onchange="setOpt(18, this.value)"><option value="0.2">Light</option><option value="0.5">Heavy</option></select></div>
+                        <div class="setting-row"><span>19. UI Layout Layering</span><select onchange="setOpt(19, this.value)"><option value="grid">Grid Flex</option><option value="block">Blocks</option></select></div>
+                        <div class="setting-row"><span>20. Audio Buffer Size</span><select onchange="setOpt(20, this.value)"><option value="4096">4096</option><option value="2048">2048</option></select></div>
+
+                        <div class="setting-row"><span>21. Engine Core Speed</span><input type="checkbox" checked onchange="setOpt(21, this.checked)"></div>
+                        <div class="setting-row"><span>22. Hardware Detection</span><input type="checkbox" checked onchange="setOpt(22, this.checked)"></div>
+                        <div class="setting-row"><span>23. Mock Network Static</span><input type="checkbox" onchange="setOpt(23, this.checked)"></div>
+                        <div class="setting-row"><span>24. Auto Collide Sweep</span><input type="checkbox" checked onchange="setOpt(24, this.checked)"></div>
+                        <div class="setting-row"><span>25. Local Storage State</span><input type="checkbox" checked onchange="setOpt(25, this.checked)"></div>
+                        <div class="setting-row"><span>26. Session Memory Stack</span><input type="checkbox" checked onchange="setOpt(26, this.checked)"></div>
+                        <div class="setting-row"><span>27. Device Vector Scan</span><input type="checkbox" onchange="setOpt(27, this.checked)"></div>
+                        <div class="setting-row"><span>28. Reduce Canvas Blur</span><input type="checkbox" onchange="setOpt(28, this.checked)"></div>
+                        <div class="setting-row"><span>29. Strict Token Rules</span><input type="checkbox" onchange="setOpt(29, this.checked)"></div>
+                        <div class="setting-row"><span>30. Hardware Thread Cap</span><input type="checkbox" checked onchange="setOpt(30, this.checked)"></div>
+                        <div class="setting-row"><span>31. Lock Aspect Scaling</span><input type="checkbox" checked onchange="setOpt(31, this.checked)"></div>
+                        <div class="setting-row"><span>32. Live Feed Animation</span><input type="checkbox" checked onchange="setOpt(32, this.checked)"></div>
+                        <div class="setting-row"><span>33. Fallback Fonts Array</span><input type="checkbox" checked onchange="setOpt(33, this.checked)"></div>
+                        <div class="setting-row"><span>34. Dynamic Island Edge</span><input type="checkbox" checked onchange="setOpt(34, this.checked)"></div>
+                        <div class="setting-row"><span>35. Build Mode Engine</span><input type="checkbox" onchange="setOpt(35, this.checked)"></div>
+                    </div>
+                </div>
+            </div>
+
         </div>
+    </div>
+
+    <div class="bench-window" id="bench-box">
+        <h3 style="margin-bottom:10px; letter-spacing:1px; font-size:1rem;">HARDWARE PROBE</h2>
+        <canvas id="bench-canvas" width="200" height="130" style="background:#111; border-radius:12px; margin-bottom:15px; border:1px solid #333;"></canvas>
+        <button class="btn" id="run-bench-btn" style="background:#34c759; margin-bottom:15px; width:80%; justify-content:center;" onclick="startGpuTest()">Run Stress Test</button>
+        <div id="bench-output" style="text-align:center; font-family:monospace; font-size:0.85rem; line-height:1.4;">
+            Status: Idle Engine<br>Score: -- GPU-pts
+        </div>
+        <button class="btn" style="margin-top:auto; background:#ff3b30;" onclick="closeBench()">Dismiss Window</button>
     </div>
 
     <div class="ios-clock-container">
@@ -357,7 +423,16 @@
     </div>
 
     <div class="widget-grid" id="main-app-grid">
-        <div class="widget" id="wd-1" draggable="false"><div class="remove-badge" onclick="hideWidget('wd-1')">−</div><div class="widget-title">Battery</div><div class="widget-value" id="v1">--</div><div class="widget-desc" id="d1">System Battery</div></div>
+        <div class="widget" id="wd-1" draggable="false">
+            <div class="remove-badge" onclick="hideWidget('wd-1')">−</div>
+            <div class="widget-title">Control Suite</div>
+            <div class="cc-grid-button-box">
+                <div class="cc-btn-node active" id="cc-wifi" onclick="toggleCcWiFi()">WiFi: ON</div>
+                <div class="cc-btn-node" id="cc-theme" onclick="toggleCcTheme()">Theme: Dark</div>
+            </div>
+            <div class="widget-desc">System Operations</div>
+        </div>
+
         <div class="widget" id="wd-2" draggable="false"><div class="remove-badge" onclick="hideWidget('wd-2')">−</div><div class="widget-title">Net Speed</div><div class="widget-value" id="v2">--</div><div class="widget-desc" id="d2">Web Connection</div></div>
         <div class="widget" id="wd-3" draggable="false"><div class="remove-badge" onclick="hideWidget('wd-3')">−</div><div class="widget-title">Engine</div><div class="widget-value" id="v3">Online</div><div class="widget-desc">Browser State</div></div>
         <div class="widget" id="wd-4" draggable="false"><div class="remove-badge" onclick="hideWidget('wd-4')">−</div><div class="widget-title">Screen W</div><div class="widget-value" id="v4">--</div><div class="widget-desc">Pixels Wide</div></div>
@@ -375,13 +450,32 @@
         <div class="widget" id="wd-16" draggable="false"><div class="remove-badge" onclick="hideWidget('wd-16')">−</div><div class="widget-title">Country</div><div class="widget-value" id="v16">Detecting...</div><div class="widget-desc" id="d16">IP Geolocation</div></div>
         <div class="widget" id="wd-17" draggable="false"><div class="remove-badge" onclick="hideWidget('wd-17')">−</div><div class="widget-title">Local Temp</div><div class="widget-value" id="v17">Detecting...</div><div class="widget-desc" id="d17">OpenMeteo API</div></div>
         <div class="widget" id="wd-18" draggable="false"><div class="remove-badge" onclick="hideWidget('wd-18')">−</div><div class="widget-title">Currency</div><div class="widget-value" id="v18">--</div><div class="widget-desc">Local Fiat Code</div></div>
-        <div class="widget" id="wd-19" draggable="false"><div class="remove-badge" onclick="hideWidget('wd-19')">−</div><div class="widget-title">Fact Check</div><div class="widget-value" style="font-size:1rem;" id="v19">Loading...</div><div class="widget-desc">Useless Facts API</div></div>
-        <div class="widget" id="wd-20" draggable="false"><div class="remove-badge" onclick="hideWidget('wd-20')">−</div><div class="widget-title">Activity</div><div class="widget-value" style="font-size:1.1rem;" id="v20">Bake a cake</div><div class="widget-desc">Suggestion Generator</div></div>
+
+        <div class="widget" id="wd-smartstack" draggable="false">
+            <div class="remove-badge" onclick="hideWidget('wd-smartstack')">−</div>
+            <div class="smart-stack-frame" id="smart-stack-node">
+                <div class="stack-nav-indicators">
+                    <div class="stack-dot active" onclick="setStackIndex(0)"></div>
+                    <div class="stack-dot" onclick="setStackIndex(1)"></div>
+                </div>
+                <div class="stack-layer active">
+                    <div class="widget-title">Fact Check</div>
+                    <div class="widget-value" style="font-size:0.9rem;" id="v19">Loading Stack Fact...</div>
+                    <div class="widget-desc">Useless Facts API</div>
+                </div>
+                <div class="stack-layer">
+                    <div class="widget-title">Activity</div>
+                    <div class="widget-value" style="font-size:0.95rem;" id="v20">Bake a chocolate cake</div>
+                    <div class="widget-desc">Suggestion Engine</div>
+                </div>
+            </div>
+        </div>
+
         <div class="widget" id="wd-21" draggable="false"><div class="remove-badge" onclick="hideWidget('wd-21')">−</div><div class="widget-title">UTC Time</div><div class="widget-value" id="v21">--</div><div class="widget-desc">Coordinated Universal</div></div>
         <div class="widget" id="wd-22" draggable="false"><div class="remove-badge" onclick="hideWidget('wd-22')">−</div><div class="widget-title">TZ Offset</div><div class="widget-value" id="v22">--</div><div class="widget-desc" id="d22">Zone</div></div>
         <div class="widget" id="wd-23" draggable="false"><div class="remove-badge" onclick="hideWidget('wd-23')">−</div><div class="widget-title">Day Progress</div><div class="widget-value" id="v23">--</div><div class="widget-desc">Percent of Day Done</div></div>
         <div class="widget" id="wd-24" draggable="false"><div class="remove-badge" onclick="hideWidget('wd-24')">−</div><div class="widget-title">Year Progress</div><div class="widget-value" id="v24">--</div><div class="widget-desc">Percent of Year Done</div></div>
-        <div class="widget" id="wd-25" draggable="false"><div class="remove-badge" onclick="hideWidget('wd-25')">−</div><div class="widget-title">Unix Epoch</div><div class="widget-value" style="font-size:1.2rem;" id="v25">--</div><div class="widget-desc">Seconds since 1970</div></div>
+        <div class="widget" id="wd-25" draggable="false"><div class="remove-badge" onclick="hideWidget('wd-25')">−</div><div class="widget-title">Unix Epoch</div><div class="widget-value" style="font-size:1.1rem;" id="v25">--</div><div class="widget-desc">Seconds since 1970</div></div>
         <div class="widget" id="wd-26" draggable="false"><div class="remove-badge" onclick="hideWidget('wd-26')">−</div><div class="widget-title">Day Number</div><div class="widget-value" id="v26">--</div><div class="widget-desc">Out of 365 days</div></div>
         <div class="widget" id="wd-27" draggable="false"><div class="remove-badge" onclick="hideWidget('wd-27')">−</div><div class="widget-title">Month</div><div class="widget-value" id="v27">--</div><div class="widget-desc">Calendar Month</div></div>
         <div class="widget" id="wd-28" draggable="false"><div class="remove-badge" onclick="hideWidget('wd-28')">−</div><div class="widget-title">Weekday</div><div class="widget-value" id="v28">--</div><div class="widget-desc">Current Day Name</div></div>
@@ -406,39 +500,182 @@
         <div class="widget" id="wd-47" draggable="false"><div class="remove-badge" onclick="hideWidget('wd-47')">−</div><div class="widget-title">ServiceWorker</div><div class="widget-value" id="v47">--</div><div class="widget-desc">Background Worker</div></div>
         <div class="widget" id="wd-48" draggable="false"><div class="remove-badge" onclick="hideWidget('wd-48')">−</div><div class="widget-title">Geolocation</div><div class="widget-value" id="v48">--</div><div class="widget-desc">GPS Core Flag</div></div>
         <div class="widget" id="wd-49" draggable="false"><div class="remove-badge" onclick="hideWidget('wd-49')">−</div><div class="widget-title">Encoding</div><div class="widget-value" id="v49">--</div><div class="widget-desc">Character Set</div></div>
-        <div class="widget" id="wd-50" draggable="false"><div class="remove-badge" onclick="hideWidget('wd-50')">−</div><div class="widget-title">OS Build</div><div class="widget-value">v2.2.0</div><div class="widget-desc">iWidgetOS Stable</div></div>
+        <div class="widget" id="wd-50" draggable="false"><div class="remove-badge" onclick="hideWidget('wd-50')">−</div><div class="widget-title">OS Build</div><div class="widget-value">v2.3.0</div><div class="widget-desc">iWidgetOS Stable</div></div>
     </div>
 
     <script>
-        // --- Custom Jiggle, Add, Remove, and Rearrange Layout Manager ---
+        // --- Dynamic Island Master Finite State Machine System ---
+        const islandNode = document.getElementById('island-node');
+        const wrappers = {
+            'default': document.getElementById('content-default'),
+            'search': document.getElementById('content-search'),
+            'media': document.getElementById('content-media'),
+            'upload': document.getElementById('content-upload'),
+            'settings': document.getElementById('content-settings')
+        };
+        let activeIslandState = 'default';
+        let edgeSweepSetting = 'search';
+
+        function triggerIslandState(targetState) {
+            // Remove previous style state signatures
+            islandNode.classList.remove('state-search', 'state-media', 'state-upload', 'state-settings');
+            Object.keys(wrappers).forEach(k => wrappers[k].classList.remove('show-content'));
+
+            if(activeIslandState === targetState && targetState !== 'default') {
+                // Clicking active item twice collapses state naturally
+                activeIslandState = 'default';
+            } else {
+                activeIslandState = targetState;
+            }
+
+            if(activeIslandState !== 'default') {
+                islandNode.classList.add(`state-${activeIslandState}`);
+                setTimeout(() => {
+                    wrappers[activeIslandState].classList.add('show-content');
+                    if(activeIslandState === 'search') document.getElementById('google-query').focus();
+                }, 150);
+            } else {
+                wrappers['default'].classList.add('show-content');
+            }
+        }
+
+        // Collapse parameters if target coordinates exit focal context boundary 
+        document.addEventListener('click', function(e) {
+            const isClickInsideIsland = islandNode.contains(e.target);
+            const isTopBarBtn = e.target.closest('.top-bar');
+            if (!isClickInsideIsland && !isTopBarBtn && activeIslandState !== 'default') {
+                triggerIslandState('default');
+            }
+        });
+
+        // Search Handlers
+        function executeGoogleSearch() {
+            const q = document.getElementById('google-query').value.trim();
+            if (q !== "") {
+                window.open(`https://www.google.com/search?q=${encodeURIComponent(q)}`, '_blank');
+                document.getElementById('google-query').value = "";
+                triggerIslandState('default');
+            }
+        }
+        function handleSearchKey(e) { if (e.key === 'Enter') executeGoogleSearch(); }
+
+        // Audio Tracking & Asset Payload Processors
+        const track = document.getElementById('bg-music');
+        const vNode = document.getElementById('bg-video-node');
+        let playing = false;
+        let isVideoActive = false;
+
+        function toggleMasterMusic() {
+            const islandBtn = document.getElementById('island-play-btn');
+            if(!playing) {
+                if(isVideoActive) {
+                    vNode.play();
+                } else {
+                    track.play();
+                }
+                islandBtn.innerText = "Mute";
+                playing = true;
+            } else {
+                track.pause();
+                vNode.pause();
+                islandBtn.innerText = "Play";
+                playing = false;
+            }
+        }
+
+        track.addEventListener('timeupdate', () => {
+            const cur = Math.floor(track.currentTime);
+            document.getElementById('media-time-label').innerText = `${Math.floor(cur/60)}:${String(cur%60).padStart(2,'0')}`;
+        });
+
+        function loadAssetUrl() {
+            const url = document.getElementById('asset-url-field').value.trim();
+            if(url) {
+                if(url.endsWith('.mp4') || url.includes('video')) {
+                    setupVideoPipeline(url, "Network Stream");
+                } else {
+                    track.src = url;
+                    document.getElementById('media-title-label').innerText = "Network Audio File";
+                    isVideoActive = false;
+                    vNode.style.display = 'none';
+                }
+                playing = false; toggleMasterMusic();
+                triggerIslandState('media');
+            }
+        }
+
+        function uploadAudioAsset(e) {
+            const file = e.target.files[0];
+            if(file) {
+                track.src = URL.createObjectURL(file);
+                document.getElementById('media-title-label').innerText = file.name.substring(0, 16);
+                isVideoActive = false;
+                vNode.style.display = 'none';
+                playing = false; toggleMasterMusic();
+                triggerIslandState('media');
+            }
+        }
+
+        function uploadVideoAsset(e) {
+            const file = e.target.files[0];
+            if(file) {
+                setupVideoPipeline(URL.createObjectURL(file), file.name);
+            }
+        }
+
+        function setupVideoPipeline(src, label) {
+            track.pause();
+            vNode.src = src;
+            vNode.style.display = 'block';
+            document.getElementById('media-title-label').innerText = label.substring(0,16);
+            isVideoActive = true;
+            playing = false; toggleMasterMusic();
+            triggerIslandState('media');
+        }
+
+
+        // --- Real 35 Parameter Matrix Configuration System Settings Engine ---
+        let configEngineOptions = {};
+        let isContinuousLoop = true;
+        let renderFractalIterations = 150;
+        let clockDisplayMode = "12";
+        let temperatureDisplayUnit = "F";
+
+        function setOpt(index, val) {
+            configEngineOptions[index] = val;
+            
+            // Map live structural code overrides to specific active indices
+            if(index === 1) document.body.style.background = val ? "var(--bg-gradient)" : "#111";
+            if(index === 2) document.documentElement.style.setProperty('--widget-bg', val ? "rgba(0,0,0,0.8)" : `rgba(255, 255, 255, ${document.getElementById('tint-slider').value / 100})`);
+            if(index === 3) isContinuousLoop = val;
+            if(index === 11) document.documentElement.style.setProperty('--global-font-scale', val);
+            if(index === 13) clockDisplayMode = val;
+            if(index === 14) renderFractalIterations = parseInt(val);
+            if(index === 15) edgeSweepSetting = val;
+            if(index === 17) temperatureDisplayUnit = val;
+        }
+
+
+        // --- Layout Grid Sorting & Arrangement Engine (Jiggle & Drop) ---
         let isEditMode = false;
         const mainGrid = document.getElementById('main-app-grid');
         const hiddenWidgetsPool = {};
 
         function toggleEditMode() {
             isEditMode = !isEditMode;
-            const widgets = document.querySelectorAll('.widget');
             const editBtn = document.getElementById('edit-layout-btn');
             const addPanel = document.getElementById('add-panel');
             
-            widgets.forEach(w => {
-                if(isEditMode) {
-                    w.classList.add('jiggling');
-                    w.setAttribute('draggable', 'true');
-                } else {
-                    w.classList.remove('jiggling');
-                    w.setAttribute('draggable', 'false');
-                }
+            document.querySelectorAll('.widget').forEach(w => {
+                if(isEditMode) { w.classList.add('jiggling'); w.setAttribute('draggable', 'true'); }
+                else { w.classList.remove('jiggling'); w.setAttribute('draggable', 'false'); }
             });
 
             if(isEditMode) {
-                editBtn.classList.add('active-mode');
-                editBtn.innerText = "🛑 Done";
-                addPanel.style.display = "flex";
-                rebuildDropdownPool();
+                editBtn.classList.add('active-mode'); editBtn.innerText = "🛑 Done";
+                addPanel.style.display = "flex"; rebuildDropdownPool();
             } else {
-                editBtn.classList.remove('active-mode');
-                editBtn.innerText = "⚙️ Edit Layout";
+                editBtn.classList.remove('active-mode'); editBtn.innerText = "🛠️ Edit";
                 addPanel.style.display = "none";
             }
         }
@@ -446,105 +683,95 @@
         function hideWidget(id) {
             const el = document.getElementById(id);
             if(el) {
-                const title = el.querySelector('.widget-title').innerText;
-                hiddenWidgetsPool[id] = { element: el, title: title };
-                el.style.display = 'none';
-                rebuildDropdownPool();
+                const t = el.querySelector('.widget-title')?.innerText || "Custom Widget";
+                hiddenWidgetsPool[id] = { element: el, title: t };
+                el.style.display = 'none'; rebuildDropdownPool();
             }
         }
 
         function rebuildDropdownPool() {
-            const select = document.getElementById('widget-pool-select');
-            select.innerHTML = '';
+            const s = document.getElementById('widget-pool-select'); s.innerHTML = '';
             const keys = Object.keys(hiddenWidgetsPool);
-            if(keys.length === 0) {
-                const opt = document.createElement('option');
-                opt.innerText = "Empty Pool";
-                select.appendChild(opt);
-                return;
-            }
-            keys.forEach(k => {
-                const opt = document.createElement('option');
-                opt.value = k;
-                opt.innerText = hiddenWidgetsPool[k].title;
-                select.appendChild(opt);
-            });
+            if(keys.length === 0) { s.appendChild(new Option("Full Deck", "")); return; }
+            keys.forEach(k => s.appendChild(new Option(hiddenWidgetsPool[k].title, k)));
         }
 
         function triggerAddWidget() {
-            const select = document.getElementById('widget-pool-select');
-            const id = select.value;
+            const id = document.getElementById('widget-pool-select').value;
             if(id && hiddenWidgetsPool[id]) {
-                const targetNode = hiddenWidgetsPool[id].element;
-                targetNode.style.display = 'flex';
-                // Append back to bottom of active DOM layout stream safely
-                mainGrid.appendChild(targetNode);
-                delete hiddenWidgetsPool[id];
-                rebuildDropdownPool();
+                hiddenWidgetsPool[id].element.style.display = 'flex';
+                mainGrid.appendChild(hiddenWidgetsPool[id].element);
+                delete hiddenWidgetsPool[id]; rebuildDropdownPool();
             }
         }
 
-        // --- Standard Drag-and-Drop Order Swapping Routine (Collision & Overlay Safe) ---
         let draggedItem = null;
-
         mainGrid.addEventListener('dragstart', (e) => {
             if(!isEditMode) { e.preventDefault(); return; }
             draggedItem = e.target.closest('.widget');
-            setTimeout(() => draggedItem.style.opacity = '0.4', 0);
         });
-
-        mainGrid.addEventListener('dragend', () => {
-            if(draggedItem) draggedItem.style.opacity = '1';
-            draggedItem = null;
-        });
-
         mainGrid.addEventListener('dragover', (e) => {
             e.preventDefault();
-            if(!draggedItem) return;
-            const targetWidget = e.target.closest('.widget');
-            if(targetWidget && targetWidget !== draggedItem) {
+            const target = e.target.closest('.widget');
+            if(target && target !== draggedItem) {
                 const children = Array.from(mainGrid.children);
-                const draggedIdx = children.indexOf(draggedItem);
-                const targetIdx = children.indexOf(targetWidget);
-                
-                if(draggedIdx < targetIdx) {
-                    mainGrid.insertBefore(draggedItem, targetWidget.nextSibling);
-                } else {
-                    mainGrid.insertBefore(draggedItem, targetWidget);
-                }
+                if(children.indexOf(draggedItem) < children.indexOf(target)) mainGrid.insertBefore(draggedItem, target.nextSibling);
+                else mainGrid.insertBefore(draggedItem, target);
             }
         });
 
 
-        // --- Real Hardware Component: Fractal GPU Benchmarker ---
+        // --- Smart Stack Rotator Interface Controller ---
+        let currentStackIdx = 0;
+        function setStackIndex(idx) {
+            currentStackIdx = idx;
+            const layers = document.querySelectorAll('#smart-stack-node .stack-layer');
+            const dots = document.querySelectorAll('#smart-stack-node .stack-dot');
+            layers.forEach((l, i) => l.classList.toggle('active', i === idx));
+            dots.forEach((d, i) => d.classList.toggle('active', i === idx));
+        }
+
+        // --- Interactive Simulated Control Center Commands ---
+        let isWiFiConnected = true;
+        function toggleCcWiFi() {
+            isWiFiConnected = !isWiFiConnected;
+            const btnCc = document.getElementById('cc-wifi');
+            btnCc.classList.toggle('active', isWiFiConnected);
+            btnCc.innerText = isWiFiConnected ? "WiFi: ON" : "WiFi: OFF";
+        }
+        function toggleCcTheme() {
+            const btnCc = document.getElementById('cc-theme');
+            if(btnCc.innerText.includes("Dark")) {
+                document.documentElement.style.setProperty('--bg-gradient', 'linear-gradient(135deg, #e5e5ea 0%, #ffffff 100%)');
+                document.documentElement.style.setProperty('--text-color', '#000000');
+                btnCc.innerText = "Theme: Light";
+            } else {
+                document.documentElement.style.setProperty('--bg-gradient', 'linear-gradient(135deg, #111827 0%, #1f2937 50%, #111827 100%)');
+                document.documentElement.style.setProperty('--text-color', '#ffffff');
+                btnCc.innerText = "Theme: Dark";
+            }
+        }
+
+
+        // --- Real Hardware Core Fractal GPU Benchmarker ---
         const benchBox = document.getElementById('bench-box');
         const benchCanvas = document.getElementById('bench-canvas');
         const benchCtx = benchCanvas.getContext('2d');
         const benchOutput = document.getElementById('bench-output');
 
-        function openBench() {
-            benchBox.classList.add('open');
-        }
-        function closeBench() {
-            benchBox.classList.remove('open');
-        }
+        function openBench() { benchBox.classList.add('open'); }
+        function closeBench() { benchBox.classList.remove('open'); }
 
         function startGpuTest() {
             const runBtn = document.getElementById('run-bench-btn');
-            runBtn.disabled = true;
-            runBtn.innerText = "Stressing Core...";
-            benchOutput.innerHTML = "Status: Executing Fractal Loop...<br>Testing draw hardware speed...";
-
+            runBtn.disabled = true; runBtn.innerText = "Stressing Core...";
             const start = performance.now();
-            let frame = 0;
-            const maxFrames = 30;
+            let frame = 0, maxFrames = 25;
 
             function drawMandelbrotFrame() {
-                const w = benchCanvas.width;
-                const h = benchCanvas.height;
+                const w = benchCanvas.width, h = benchCanvas.height;
                 const imgData = benchCtx.createImageData(w, h);
-                // Artificially change zoom vectors per frame step to force rendering calls
-                const zoom = 1.0 + (frame * 0.15);
+                const zoom = 1.0 + (frame * 0.2);
 
                 for (let x = 0; x < w; x++) {
                     for (let y = 0; y < h; y++) {
@@ -552,130 +779,70 @@
                         let cr = (x - w/1.5) * 4.0 / (w * zoom);
                         let ci = (y - h/2.0) * 4.0 / (h * zoom);
                         let i = 0;
-                        while (zr*zr + zi*zi < 4 && i < 150) {
+                        while (zr*zr + zi*zi < 4 && i < renderFractalIterations) {
                             let temp = zr*zr - zi*zi + cr;
-                            zi = 2*zr*zi + ci;
-                            zr = temp;
-                            i++;
+                            zi = 2*zr*zi + ci; zr = temp; i++;
                         }
                         let pIdx = (x + y * w) * 4;
-                        imgData.data[pIdx] = (i * 8) % 255;
-                        imgData.data[pIdx+1] = (i * 4) % 255;
-                        imgData.data[pIdx+2] = (i * 2) % 255;
+                        imgData.data[pIdx] = (i * 9) % 255;
+                        imgData.data[pIdx+1] = (i * 3) % 255;
+                        imgData.data[pIdx+2] = (i * 5) % 255;
                         imgData.data[pIdx+3] = 255;
                     }
                 }
-                benchCtx.putImageData(imgData, 0, 0);
-                frame++;
-
-                if(frame < maxFrames) {
-                    requestAnimationFrame(drawMandelbrotFrame);
-                } else {
-                    const elapsed = performance.now() - start;
-                    // Calculate a real performance score (Lower draw times = higher raw score points)
-                    const score = Math.floor((maxFrames / elapsed) * 100000);
-                    benchOutput.innerHTML = `Status: Complete!<br>Draw Latency: ${(elapsed/maxFrames).toFixed(1)}ms/f<br><strong style='color:#34c759; font-size:1.1rem;'>Score: ${score.toLocaleString()} GPU-pts</strong>`;
-                    runBtn.disabled = false;
-                    runBtn.innerText = "Run Stress Test";
+                benchCtx.putImageData(imgData, 0, 0); frame++;
+                if(frame < maxFrames) requestAnimationFrame(drawMandelbrotFrame);
+                else {
+                    const total = performance.now() - start;
+                    const score = Math.floor((maxFrames / total) * 120000);
+                    benchOutput.innerHTML = `Latency: ${(total/maxFrames).toFixed(1)}ms/f<br><strong style='color:#34c759;'>Score: ${score.toLocaleString()} GPU-pts</strong>`;
+                    runBtn.disabled = false; runBtn.innerText = "Run Stress Test";
                 }
             }
             requestAnimationFrame(drawMandelbrotFrame);
         }
 
 
-        // --- Dynamic Island Integration Logic ---
-        const islandNode = document.getElementById('island-node');
-        const searchInput = document.getElementById('google-query');
-
-        function toggleIsland() {
-            islandNode.classList.toggle('active');
-            if (islandNode.classList.contains('active')) {
-                setTimeout(() => searchInput.focus(), 200);
-            }
-        }
-
-        function expandIslandExplicit() {
-            if (!islandNode.classList.contains('active')) {
-                islandNode.classList.add('active');
-                setTimeout(() => searchInput.focus(), 200);
-            }
-        }
-
-        document.addEventListener('click', function(e) {
-            const isClickInsideIsland = islandNode.contains(e.target);
-            const isSearchBtn = document.getElementById('search-trigger-btn').contains(e.target);
-            if (!isClickInsideIsland && !isSearchBtn && islandNode.classList.contains('active')) {
-                islandNode.classList.remove('active');
-            }
-        });
-
-        function executeGoogleSearch() {
-            const query = searchInput.value.trim();
-            if (query !== "") {
-                window.open(`https://www.google.com/search?q=${encodeURIComponent(query)}`, '_blank');
-                searchInput.value = "";
-                islandNode.classList.remove('active');
-            }
-        }
-
-        function handleSearchKey(event) {
-            if (event.key === 'Enter') executeGoogleSearch();
-        }
-
-        // Left Side Swipe Sensor
+        // --- Gestural Left Side Swipe Detector Interface ---
         const dragZone = document.getElementById('drag-zone');
         let touchStartX = 0;
         dragZone.addEventListener('touchstart', (e) => touchStartX = e.touches[0].clientX);
         dragZone.addEventListener('touchend', (e) => {
-            if (e.changedTouches[0].clientX - touchStartX > 30) expandIslandExplicit();
+            if (e.changedTouches[0].clientX - touchStartX > 30) triggerIslandState(edgeSweepSetting);
         });
         dragZone.addEventListener('mousedown', (e) => {
             const handleMouseUp = (mEv) => {
-                if (mEv.clientX > 40) expandIslandExplicit();
+                if (mEv.clientX > 40) triggerIslandState(edgeSweepSetting);
                 document.removeEventListener('mouseup', handleMouseUp);
             };
             document.addEventListener('mouseup', handleMouseUp);
         });
 
 
-        // --- Glass Style Engine ---
+        // --- Slider UI Hooks ---
         const tint = document.getElementById('tint-slider');
         const blur = document.getElementById('blur-slider');
         function applyStyles() {
-            document.documentElement.style.setProperty('--widget-bg', `rgba(255, 255, 255, ${tint.value / 100})`);
+            if(!configEngineOptions[2]) document.documentElement.style.setProperty('--widget-bg', `rgba(255, 255, 255, ${tint.value / 100})`);
             document.documentElement.style.setProperty('--widget-blur', blur.value + 'px');
         }
-        tint.addEventListener('input', applyStyles);
-        blur.addEventListener('input', applyStyles);
-        applyStyles();
+        tint.addEventListener('input', applyStyles); blur.addEventListener('input', applyStyles); applyStyles();
 
-        // --- Background Audio Player ---
-        const track = document.getElementById('bg-music');
-        const btn = document.getElementById('music-btn');
-        let playing = false;
-        function toggleMusic() {
-            if(!playing) {
-                track.play().then(() => { btn.innerText = "🔇 Mute"; playing = true; })
-                .catch(() => alert("Click screen background first, then press unmute!"));
-            } else {
-                track.pause(); btn.innerText = "🎵 Play Music"; playing = false;
-            }
-        }
-
-        // --- Active 12-Hour Lock Clock ---
+        // --- Core Time Calculations Engine Loop ---
         function runClock() {
             const now = new Date();
             document.getElementById('ios-date').innerText = now.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
             let h = now.getHours();
             let m = String(now.getMinutes()).padStart(2, '0');
-            let ampm = h >= 12 ? 'PM' : 'AM';
-            h = h % 12 || 12;
-            document.getElementById('ios-clock').innerText = `${h}:${m} ${ampm}`;
+            if(clockDisplayMode === "12") {
+                let ampm = h >= 12 ? 'PM' : 'AM'; h = h % 12 || 12;
+                document.getElementById('ios-clock').innerText = `${h}:${m} ${ampm}`;
+            } else {
+                document.getElementById('ios-clock').innerText = `${String(h).padStart(2,'0')}:${m}`;
+            }
         }
-        setInterval(runClock, 1000);
-        runClock();
+        setInterval(runClock, 1000); runClock();
 
-        // --- Real Web Hardware Performance API Sync Arrays ---
         function loadSystemData() {
             document.getElementById('v4').innerText = window.screen.width;
             document.getElementById('v5').innerText = window.screen.height;
@@ -708,22 +875,15 @@
                     updateB(); b.addEventListener('levelchange', updateB); b.addEventListener('chargingchange', updateB);
                 });
             }
-            if(navigator.connection) {
-                document.getElementById('v2').innerText = navigator.connection.downlink + " Mbps";
-                document.getElementById('d2').innerText = "Type: " + navigator.connection.effectiveType.toUpperCase();
-                document.getElementById('v44').innerText = navigator.connection.rtt + " ms";
-                document.getElementById('v45').innerText = navigator.connection.saveData ? "Yes" : "No";
-            }
         }
 
-        // System Calculations Continuous Loop
         setInterval(() => {
+            if(!isContinuousLoop || !isWiFiConnected) return;
             const d = new Date();
             document.getElementById('v21').innerText = d.getUTCHours() + ":" + String(d.getUTCMinutes()).padStart(2, '0');
             document.getElementById('v22').innerText = (d.getTimezoneOffset() / -60) + " Hours";
             document.getElementById('d22').innerText = Intl.DateTimeFormat().resolvedOptions().timeZone;
             document.getElementById('v23').innerText = (((d.getHours()*60 + d.getMinutes()) / 1440) * 100).toFixed(1) + "%";
-            
             const start = new Date(d.getFullYear(), 0, 1);
             document.getElementById('v24').innerText = (((d - start) / (1000*60*60*24*365)) * 100).toFixed(2) + "%";
             document.getElementById('v25').innerText = Math.floor(Date.now() / 1000);
@@ -732,24 +892,17 @@
             document.getElementById('v28').innerText = d.toLocaleString('default', { weekday: 'short' });
             document.getElementById('v29').innerText = (new Date(d.getFullYear(), 1, 29).getMonth() === 1) ? "Yes" : "No";
             document.getElementById('v30').innerText = Math.floor(performance.now()) + "ms";
-            if(window.performance?.memory) {
-                document.getElementById('v33').innerText = (performance.memory.usedJSHeapSize / 1048576).toFixed(1) + " MB";
-            }
         }, 400);
 
-        // Async Live API Web Feeds
         async function fetchWebData() {
+            if(!isWiFiConnected) return;
             try {
                 const res = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,solana,dogecoin&vs_currencies=usd');
                 const data = await res.json();
                 document.getElementById('v11').innerText = "$" + data.bitcoin.usd.toLocaleString();
-                document.getElementById('d11').innerText = "Live Market Price";
                 document.getElementById('v12').innerText = "$" + data.ethereum.usd.toLocaleString();
-                document.getElementById('d12').innerText = "Live Market Price";
                 document.getElementById('v13').innerText = "$" + data.solana.usd.toLocaleString();
-                document.getElementById('d13').innerText = "Live Market Price";
                 document.getElementById('v14').innerText = "$" + data.dogecoin.usd.toFixed(3);
-                document.getElementById('d14').innerText = "Live Market Price";
             } catch(e){}
 
             try {
@@ -763,8 +916,13 @@
 
                 const wRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${data.latitude}&longitude=${data.longitude}&current_weather=true`);
                 const wData = await wRes.json();
-                document.getElementById('v17').innerText = ((wData.current_weather.temperature * 9/5) + 32).toFixed(1) + "°F";
-                document.getElementById('d17').innerText = wData.current_weather.temperature + "°C Local";
+                if(temperatureDisplayUnit === "F") {
+                    document.getElementById('v17').innerText = ((wData.current_weather.temperature * 9/5) + 32).toFixed(1) + "°F";
+                    document.getElementById('d17').innerText = wData.current_weather.temperature + "°C Local";
+                } else {
+                    document.getElementById('v17').innerText = wData.current_weather.temperature + "°C";
+                    document.getElementById('d17').innerText = "Local Temperature";
+                }
             } catch(e){}
 
             try {
@@ -774,8 +932,7 @@
             } catch(e){}
         }
 
-        loadSystemData();
-        fetchWebData();
+        loadSystemData(); fetchWebData();
     </script>
 </body>
 </html>
