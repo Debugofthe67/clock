@@ -22,8 +22,8 @@
 
 
 </head>
-
-    <style>
+    <head>
+        <style>
         :root {
             --bg-gradient: linear-gradient(135deg, #111827 0%, #1f2937 50%, #111827 100%);
             --widget-bg: rgba(255, 255, 255, 0.1);
@@ -50,11 +50,11 @@
             overflow-x: hidden;
         }
 
-        /* Top Bar Customizer */
+        /* Top Bar Customizer Controls */
         .top-bar {
             position: sticky;
             top: 10px;
-            z-index: 1000;
+            z-index: 999;
             display: flex;
             flex-wrap: wrap;
             gap: 15px;
@@ -103,12 +103,115 @@
             border-radius: 20px;
             cursor: pointer;
             font-weight: 600;
+            transition: all 0.2s ease;
+        }
+        .btn:hover { background: rgba(255, 255, 255, 0.35); }
+
+        /* Dynamic Island - Search Bar Engine */
+        .dynamic-island-container {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 1000;
+        }
+
+        .dynamic-island {
+            background: #000000;
+            color: #ffffff;
+            width: 110px;
+            height: 30px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            padding: 0 10px;
+        }
+
+        /* Pill Expansion States (Liquid Split Effect) */
+        .dynamic-island.active {
+            width: 340px;
+            height: 48px;
+            border-radius: 24px;
+            background: #000000;
+            filter: contrast(1.1);
+        }
+
+        .island-compact {
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+            transition: opacity 0.3s ease;
+        }
+
+        .dynamic-island.active .island-compact {
+            display: none;
+        }
+
+        .island-expanded {
+            display: none;
+            width: 100%;
+            align-items: center;
+            gap: 10px;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .dynamic-island.active .island-expanded {
+            display: flex;
+            opacity: 1;
+        }
+
+        .search-input {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.15);
+            border: none;
+            outline: none;
+            padding: 6px 12px;
+            border-radius: 15px;
+            color: white;
+            font-size: 0.9rem;
+        }
+
+        .search-input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .search-go-btn {
+            background: #ffffff;
+            border: none;
+            color: #000000;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+        }
+
+        /* Left-Side Gestural Edge Pull Area */
+        .left-drag-zone {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 20px;
+            height: 100vh;
+            z-index: 1001;
+            cursor: ew-resize;
         }
 
         /* iOS 16 Lock Screen Clock */
         .ios-clock-container {
             text-align: center;
-            margin: 20px 0 40px 0;
+            margin: 10px 0 35px 0;
         }
 
         .ios-date {
@@ -148,7 +251,9 @@
             justify-content: space-between;
             aspect-ratio: 1 / 1;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s ease;
         }
+        .widget:hover { transform: scale(1.02); }
 
         .widget-title {
             font-size: 0.75rem;
@@ -173,6 +278,8 @@
 </head>
 <body>
 
+    <div class="left-drag-zone" id="drag-zone" title="Swipe or pull right to open Search Island"></div>
+
     <audio id="bg-music" loop src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"></audio>
 
     <div class="top-bar">
@@ -184,8 +291,17 @@
             <label>Blur:</label>
             <input type="range" id="blur-slider" class="slider" min="0" max="40" value="20">
         </div>
-        <button class="btn" id="music-btn" onclick="toggleMusic()">Music(beta. example music.)</button>
-                <button class="btn" id="music-btn" onclick="!document.fullscreenElement ? document.documentElement.requestFullscreen() : document.exitFullscreen()">Go FullScreen</button>
+        <button class="btn" id="music-btn" onclick="toggleMusic()">🎵 Play Music</button>
+    </div>
+
+    <div class="dynamic-island-container">
+        <div class="dynamic-island" id="island-node" onclick="expandIslandExplicit()">
+            <div class="island-compact" id="island-pill-label">Search</div>
+            <div class="island-expanded">
+                <input type="text" id="google-query" class="search-input" placeholder="Search Google..." onkeydown="handleSearchKey(event)">
+                <button class="search-go-btn" onclick="executeGoogleSearch()">➔</button>
+            </div>
+        </div>
     </div>
 
     <div class="ios-clock-container">
@@ -246,11 +362,81 @@
         <div class="widget"><div class="widget-title">ServiceWorker</div><div class="widget-value" id="v47">--</div><div class="widget-desc">Background Worker</div></div>
         <div class="widget"><div class="widget-title">Geolocation</div><div class="widget-value" id="v48">--</div><div class="widget-desc">GPS Core Flag</div></div>
         <div class="widget"><div class="widget-title">Encoding</div><div class="widget-value" id="v49">--</div><div class="widget-desc">Character Set</div></div>
-        <div class="widget"><div class="widget-title">OS Build</div><div class="widget-value">v1.0.0</div><div class="widget-desc">iWidgetOS Stable</div></div>
+        <div class="widget"><div class="widget-title">OS Build</div><div class="widget-value">v1.1.0</div><div class="widget-desc">iWidgetOS Stable</div></div>
     </div>
 
     <script>
-        // --- Custom Styling Controller ---
+        // --- Dynamic Island Interaction Logic ---
+        const islandNode = document.getElementById('island-node');
+        const searchInput = document.getElementById('google-query');
+
+        function toggleIsland() {
+            islandNode.classList.toggle('active');
+            if (islandNode.classList.contains('active')) {
+                setTimeout(() => searchInput.focus(), 200);
+            }
+        }
+
+        function expandIslandExplicit() {
+            if (!islandNode.classList.contains('active')) {
+                islandNode.classList.add('active');
+                setTimeout(() => searchInput.focus(), 200);
+            }
+        }
+
+        // Collapse Island when clicking outside of it
+        document.addEventListener('click', function(e) {
+            const isClickInsideIsland = islandNode.contains(e.target);
+            const isSearchBtn = document.getElementById('search-trigger-btn').contains(e.target);
+            if (!isClickInsideIsland && !isSearchBtn && islandNode.classList.contains('active')) {
+                islandNode.classList.remove('active');
+            }
+        });
+
+        // Google Redirect Core Operations
+        function executeGoogleSearch() {
+            const query = searchInput.value.trim();
+            if (query !== "") {
+                window.open(`https://www.google.com/search?q=${encodeURIComponent(query)}`, '_blank');
+                searchInput.value = "";
+                islandNode.classList.remove('active');
+            }
+        }
+
+        function handleSearchKey(event) {
+            if (event.key === 'Enter') {
+                executeGoogleSearch();
+            }
+        }
+
+        // Left Edge Swipe/Pull Interface Controller (Triggers Dynamic Island)
+        const dragZone = document.getElementById('drag-zone');
+        let touchStartX = 0;
+
+        dragZone.addEventListener('touchstart', (e) => {
+            touchStartX = e.touches[0].clientX;
+        });
+
+        dragZone.addEventListener('touchend', (e) => {
+            let touchEndX = e.changedTouches[0].clientX;
+            if (touchEndX - touchStartX > 30) { // Dragged rightward from left panel edge
+                expandIslandExplicit();
+            }
+        });
+
+        // Fallback Mouse Drag emulation for Desktop window testing
+        dragZone.addEventListener('mousedown', (e) => {
+            const handleMouseUp = (moveEvent) => {
+                if (moveEvent.clientX > 40) { 
+                    expandIslandExplicit();
+                }
+                document.removeEventListener('mouseup', handleMouseUp);
+            };
+            document.addEventListener('mouseup', handleMouseUp);
+        });
+
+
+        // --- Custom Design/Styling UI Controls ---
         const tint = document.getElementById('tint-slider');
         const blur = document.getElementById('blur-slider');
         function applyStyles() {
@@ -261,7 +447,7 @@
         blur.addEventListener('input', applyStyles);
         applyStyles();
 
-        // --- Audio Track Switch ---
+        // --- Audio Controller ---
         const track = document.getElementById('bg-music');
         const btn = document.getElementById('music-btn');
         let playing = false;
