@@ -21,1097 +21,628 @@
             <link rel="apple-touch-icon" sizes="180x180" href="https://cdn-icons-png.flaticon.com/512/11244/11244686.png">
 
     <meta name="keywords" content="iwidgetos, debugofthe67, tp67">
-</head>
     <style>
-        :root {
-            --bg-gradient: linear-gradient(135deg, #111827 0%, #1f2937 50%, #111827 100%);
-            --widget-bg: rgba(255, 255, 255, 0.1);
-            --widget-blur: 20px;
-            --text-color: #ffffff;
-            --global-font-scale: 1;
+        /* --- Custom Root Font Integration --- */
+        @font-face {
+            font-family: 'TallFont';
+            src: url('/tall.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
         }
 
-@font-face {
-  font-family: 'TallFont';
-  src: url('./tall.tff') format('truetype'),
-       url('tall.tff') format('truetype'),
-       url('/tall.tff') format('truetype');
-  font-weight: normal;
-  font-style: normal;
-}
+        :root {
+            --bg-gradient: linear-gradient(135deg, #090d16 0%, #111827 50%, #030712 100%);
+            --liquid-glass-bg: rgba(255, 255, 255, 0.06);
+            --liquid-glass-border: rgba(255, 255, 255, 0.1);
+            --liquid-glass-blur: blur(25px);
+            --text-primary: #ffffff;
+            --accent-blue: #007aff;
+            --accent-green: #34c759;
+        }
 
-
-/* 2. Update your universal selector */
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-  /* Your font is now the first choice, others are fallbacks */
-  font-family: 'TallFont', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-}
-
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+            user-select: none;
+        }
 
         body {
             background: var(--bg-gradient);
             background-attachment: fixed;
-            color: var(--text-color);
+            color: var(--text-primary);
             min-height: 100vh;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            overflow-x: hidden;
+            overflow: hidden;
+            position: relative;
         }
 
-        .top-bar {
-            position: sticky;
-            top: 10px;
-            z-index: 999;
+        /* Top Navigation Control Bar */
+        .system-top-bar {
+            position: absolute;
+            top: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 100;
             display: flex;
-            flex-wrap: wrap;
             gap: 10px;
             background: rgba(0, 0, 0, 0.6);
-            padding: 12px 24px;
+            padding: 8px 18px;
             border-radius: 30px;
-            backdrop-filter: blur(15px);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--liquid-glass-border);
             align-items: center;
-            justify-content: center;
-            margin-bottom: 20px;
-            border: 1px solid rgba(255,255,255,0.15);
         }
 
-        .control-group {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 0.85rem;
-        }
-
-        .slider {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 70px;
-            height: 5px;
-            border-radius: 5px;
-            background: rgba(255,255,255,0.3);
-            outline: none;
-        }
-
-        .slider::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background: white;
-            cursor: pointer;
-        }
-
-        .btn {
-            background: rgba(255, 255, 255, 0.12);
-            border: 1px solid rgba(255, 255, 255, 0.18);
+        .sys-btn {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.12);
             color: white;
-            padding: 6px 12px;
+            padding: 6px 14px;
             border-radius: 20px;
             cursor: pointer;
-            font-weight: 600;
-            transition: all 0.2s ease;
+            font-weight: 500;
             font-size: 0.8rem;
-            display: flex;
-            align-items: center;
-            gap: 5px;
+            transition: all 0.2s cubic-bezier(0.25, 1, 0.5, 1);
         }
-        .btn:hover { background: rgba(255, 255, 255, 0.25); }
-        .btn.active-mode { background: #34c759; border-color: #30b34e; }
-
-        .add-select {
-            background: #000;
-            color: #fff;
-            border: 1px solid rgba(255,255,255,0.3);
-            padding: 4px 8px;
-            border-radius: 12px;
-            font-size: 0.8rem;
-            outline: none;
+        .sys-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-1px);
+        }
+        .sys-btn.primary {
+            background: var(--accent-blue);
+            border-color: rgba(255,255,255,0.2);
         }
 
-        .dynamic-island-container {
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-bottom: 15px;
-            position: relative;
-            z-index: 1000;
-            gap: 10px;
+        /* Dynamic Island Shell */
+        .dynamic-island-wrapper {
+            position: absolute;
+            top: 70px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 90;
         }
 
         .dynamic-island {
             background: #000000;
-            color: #ffffff;
-            width: 120px;
+            width: 140px;
             height: 32px;
-            border-radius: 22px;
+            border-radius: 25px;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
             overflow: hidden;
-            box-shadow: 0 12px 35px rgba(0,0,0,0.6);
-            padding: 0 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+            border: 1px solid rgba(255,255,255,0.08);
+            padding: 0 15px;
         }
 
-        .dynamic-island.state-search { width: 350px; height: 50px; border-radius: 25px; }
-        .dynamic-island.state-media { width: 380px; height: 75px; border-radius: 28px; }
-        .dynamic-island.state-upload { width: 400px; height: 110px; border-radius: 30px; }
-        .dynamic-island.state-settings { width: 460px; height: 320px; border-radius: 32px; }
-        .dynamic-island.state-siri { width: 320px; height: 70px; border-radius: 25px; }
+        .dynamic-island.state-search { width: 330px; height: 50px; }
+        .dynamic-island.state-media { width: 350px; height: 70px; }
+        .dynamic-island.state-settings { width: 420px; height: 230px; border-radius: 28px; }
 
-        .island-content-wrapper {
+        .island-view {
             width: 100%;
             height: 100%;
             display: none;
             align-items: center;
-            justify-content: center;
             opacity: 0;
-            transition: opacity 0.3s ease;
+            transition: opacity 0.2s ease;
         }
-        .show-content { display: flex; opacity: 1; }
+        .island-view.active { display: flex; opacity: 1; }
 
-        .search-input {
-            flex: 1;
-            background: rgba(255, 255, 255, 0.15);
+        .island-input {
+            width: 100%;
+            background: rgba(255,255,255,0.12);
             border: none;
             outline: none;
             padding: 6px 12px;
-            border-radius: 15px;
+            border-radius: 12px;
             color: white;
             font-size: 0.85rem;
         }
 
-        .search-go-btn {
-            background: #ffffff;
-            border: none;
-            color: #000000;
-            width: 26px;
-            height: 26px;
-            border-radius: 50%;
-            cursor: pointer;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        /* Siri Canvas Layout */
-        .siri-panel { flex-direction: column; width: 100%; height: 100%; justify-content: center; position: relative; }
-        .siri-canvas { width: 100%; height: 35px; background: transparent; }
-
-        .settings-container-layout {
-            display: flex;
-            flex-direction: column;
-            width: 100%;
-            height: 100%;
-            padding: 10px 5px;
-        }
-        .settings-grid-pane {
+        /* Grid Workspace & Widget Canvas */
+        .workspace-canvas {
+            position: absolute;
+            top: 140px;
+            left: 20px;
+            right: 20px;
+            bottom: 20px;
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 6px;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            grid-auto-rows: 190px;
+            gap: 18px;
             overflow-y: auto;
-            flex: 1;
-            padding-right: 4px;
+            padding-right: 10px;
         }
-        .settings-grid-pane::-webkit-scrollbar { width: 4px; }
-        .settings-grid-pane::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 2px; }
-
-        .setting-row {
-            background: rgba(255,255,255,0.08);
-            padding: 6px 10px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            font-size: 0.75rem;
+        .workspace-canvas::-webkit-scrollbar {
+            width: 6px;
         }
-        .setting-row input[type="checkbox"] { cursor: pointer; }
-        .setting-row select { background: #111; color: #fff; border: none; font-size: 0.7rem; padding: 2px 4px; border-radius: 4px; }
-
-        .bench-window {
-            position: fixed;
-            top: 20px;
-            width: 0;
-            height: 0;
-            background: #000000;
-            border-radius: 30px;
-            z-index: 2000;
-            overflow: hidden;
-            opacity: 0;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.6);
-            transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 0;
-            color: white;
-        }
-        .bench-window.open { width: 360px; height: 440px; opacity: 1; padding: 20px; }
-
-        .cc-grid-button-box { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; width: 100%; height: 100%; }
-        .cc-btn-node { background: rgba(255,255,255,0.1); border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 600; cursor: pointer; border: 1px solid rgba(255,255,255,0.05); }
-        .cc-btn-node.active { background: #007aff; }
-
-        .smart-stack-frame { width: 100%; height: 100%; position: relative; overflow: hidden; }
-        .stack-layer { position: absolute; width: 100%; height: 100%; display: none; flex-direction: column; justify-content: space-between; transition: opacity 0.2s ease; }
-        .stack-layer.active { display: flex; }
-        .stack-nav-indicators { position: absolute; right: 0; top: 40%; display: flex; flex-direction: column; gap: 4px; z-index: 5; }
-        .stack-dot { width: 5px; height: 5px; background: rgba(255,255,255,0.3); border-radius: 50%; cursor: pointer; }
-        .stack-dot.active { background: #fff; }
-
-        .left-drag-zone { position: fixed; top: 0; left: 0; width: 20px; height: 100vh; z-index: 1001; cursor: ew-resize; }
-        .ios-clock-container { text-align: center; margin: 5px 0 25px 0; }
-        .ios-date { font-size: 1.1rem; text-transform: uppercase; letter-spacing: 2px; font-weight: 600; margin-bottom: 3px; }
-        .ios-clock { font-size: 5rem; font-weight: 700; line-height: 1; }
-
-        .widget-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-            gap: 16px;
-            width: 100%;
-            max-width: 1200px;
-            padding-bottom: 60px;
+        .workspace-canvas::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.15);
+            border-radius: 3px;
         }
 
-        .widget {
-            background: var(--widget-bg);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(var(--widget-blur));
-            -webkit-backdrop-filter: blur(var(--widget-blur));
-            border-radius: 22px;
+        .widget-frame {
+            background: var(--liquid-glass-bg);
+            border: 1px solid var(--liquid-glass-border);
+            backdrop-filter: var(--liquid-glass-blur);
+            -webkit-backdrop-filter: var(--liquid-glass-blur);
+            border-radius: 24px;
             padding: 16px;
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
-            aspect-ratio: 1 / 1;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
             position: relative;
-            user-select: none;
-            cursor: default;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+            overflow: hidden;
+            resize: both;
+            transition: border-color 0.2s ease;
+        }
+        .widget-frame:hover {
+            border-color: rgba(255, 255, 255, 0.25);
         }
 
-        @keyframes iosJiggle { 0% { transform: rotate(-1deg); } 50% { transform: rotate(1.2deg) scale(1.01); } 100% { transform: rotate(-1deg); } }
-        .jiggling { animation: iosJiggle 0.28s infinite ease-in-out; cursor: grab; box-shadow: 0 8px 25px rgba(0,0,0,0.3); border: 1px dashed rgba(255,255,255,0.4); }
-        
-        .remove-badge { position: absolute; top: -6px; left: -6px; background: #ff3b30; color: white; width: 22px; height: 22px; border-radius: 50%; display: none; align-items: center; justify-content: center; font-weight: bold; font-size: 14px; cursor: pointer; z-index: 10; }
-        .jiggling .remove-badge { display: flex; }
+        .widget-header {
+            font-size: 0.68rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.5;
+            font-weight: 700;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
 
-        .widget-title { font-size: calc(0.75rem * var(--global-font-scale)); text-transform: uppercase; letter-spacing: 1px; opacity: 0.6; font-weight: 700; }
-        .widget-value { font-size: calc(1.4rem * var(--global-font-scale)); font-weight: 600; margin: 5px 0; word-break: break-all; }
-        .widget-desc { font-size: calc(0.75rem * var(--global-font-scale)); opacity: 0.7; }
+        /* Custom Clock Widget using tall.ttf */
+        .clock-widget-body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            flex: 1;
+        }
 
-        #media-time-label {
-  /* Forces numbers to have equal widths so the clock doesn't shake */
-  font-variant-numeric: tabular-nums; 
-  
-  /* Optional: Ensures the custom font takes priority on this specific label */
-  font-family: 'TallFont', sans-serif; 
-}
+        .clock-digits {
+            font-family: 'TallFont', -apple-system, sans-serif;
+            font-size: 3.8rem;
+            line-height: 1;
+            letter-spacing: 2px;
+            color: #ffffff;
+            text-shadow: 0 0 20px rgba(255,255,255,0.2);
+        }
 
+        .clock-subtext {
+            font-size: 0.75rem;
+            opacity: 0.7;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-top: 4px;
+        }
+
+        /* App Launcher Shortcuts */
+        .shortcut-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 4px;
+        }
+
+        .shortcut-node {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+        .shortcut-node:hover { transform: scale(1.08); }
+
+        .shortcut-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 12px;
+            background: rgba(255,255,255,0.1);
+            object-fit: cover;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        .shortcut-label {
+            font-size: 0.6rem;
+            color: #fff;
+            margin-top: 4px;
+            opacity: 0.8;
+            text-align: center;
+        }
+
+        /* Floating Windows Architecture */
+        .system-window {
+            position: absolute;
+            top: 180px;
+            left: 180px;
+            width: 340px;
+            height: 250px;
+            background: rgba(12, 12, 12, 0.88);
+            border: 1px solid rgba(255,255,255,0.15);
+            backdrop-filter: blur(30px);
+            border-radius: 18px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+            z-index: 500;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            resize: both;
+        }
+
+        .window-titlebar {
+            background: rgba(255,255,255,0.04);
+            padding: 10px 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            cursor: move;
+        }
+
+        .window-title { font-size: 0.8rem; font-weight: 600; letter-spacing: 0.5px; }
+        .window-close-btn { background: #ff5f56; width: 12px; height: 12px; border-radius: 50%; border: none; cursor: pointer; }
+
+        .window-body {
+            flex: 1;
+            padding: 14px;
+            overflow: auto;
+            font-size: 0.85rem;
+        }
+
+        .win-textarea {
+            width: 100%;
+            height: 100%;
+            background: transparent;
+            border: none;
+            resize: none;
+            color: white;
+            outline: none;
+            font-size: 0.85rem;
+        }
+
+        /* Right Floating Edge Dock */
+        .right-hot-edge {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 16px;
+            height: 100vh;
+            z-index: 999;
+            cursor: pointer;
+        }
+
+        .floating-edge-dock {
+            position: absolute;
+            top: 50%;
+            right: -85px;
+            transform: translateY(-50%);
+            background: rgba(0, 0, 0, 0.65);
+            backdrop-filter: blur(25px);
+            border: 1px solid rgba(255,255,255,0.12);
+            padding: 14px 10px;
+            border-radius: 24px 0 0 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            transition: right 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            z-index: 1000;
+            box-shadow: -10px 0 30px rgba(0,0,0,0.4);
+        }
+        .floating-edge-dock.visible { right: 0; }
+
+        .dock-app-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: rgba(255,255,255,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.3rem;
+            transition: transform 0.2s;
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+        .dock-app-icon:hover { transform: scale(1.1) translateX(-3px); background: rgba(255,255,255,0.25); }
+
+        .bench-metric { font-size: 1.25rem; font-weight: bold; margin-top: 4px; color: var(--accent-green); }
+        .bench-sub { font-size: 0.65rem; opacity: 0.6; margin-bottom: 4px; }
     </style>
 </head>
-<body>
+<body id="desktop-env">
 
-        <h1>iWidgetOS</h1>
-    
-    <!-- 4. Custom Description displayed on the page to visitors -->
-    <p>Widget Website that make your devices into a alternative to home display devices.</p>
+    <div class="right-hot-edge" onmouseenter="revealFloatingDock()"></div>
 
-    <!-- HTML Sitemap Links List -->
-    <nav>
-        <ul>
-            <li><a href="https://debugofthe67.github.io/clock/">Home</a></li>
-            <li><a href="https:/github.com/debugofthe67/clock/">Repo</a></li>
-        </ul>
-    </nav>
-
-    <div class="left-drag-zone" id="drag-zone"></div>
-    <audio id="bg-music" loop src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"></audio>
-    <video id="bg-video-node" loop style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; object-fit:cover; z-index:-2; opacity:0.4;"></video>
-
-    <div class="top-bar">
-        <div class="control-group">
-            <label>Tint:</label>
-            <input type="range" id="tint-slider" class="slider" min="5" max="80" value="15">
-        </div>
-        <div class="control-group">
-            <label>Blur:</label>
-            <input type="range" id="blur-slider" class="slider" min="0" max="40" value="20">
-        </div>
-        <button class="btn" onclick="triggerIslandState('search')">🔍 Search</button>
-        <button class="btn" onclick="triggerIslandState('media')">🎵 Media</button>
-        <button class="btn" onclick="triggerIslandState('settings')">⚙️ Settings Console</button>
-        <button class="btn" id="edit-layout-btn" onclick="toggleEditMode()">🛠️ Edit Layout</button>
-        <div class="control-group" id="add-panel" style="display:none;">
-            <select id="widget-pool-select" class="add-select"></select>
-            <button class="btn" onclick="triggerAddWidget()">➕</button>
-        </div>
-        <button class="btn" style="background:#5856d6;" onclick="openBench()">🏎️ GPU Bench</button>
-        <button class="btn" style="background:#24292e;" onclick="window.open('https://github.com/debugofthe67/clock/', '_blank')">🐙 GitHub</button>
-        <button class="btn" style="background:#5856d6;" onclick="!document.fullscreenElement ? document.documentElement.requestFullscreen() : document.exitFullscreen()">Full Screen</button>
+    <div class="floating-edge-dock" id="smart-dock">
+        <div class="dock-app-icon" onclick="launchWindow('Notes', '📝')" title="Notes App">📝</div>
+        <div class="dock-app-icon" onclick="launchWindow('Alarm', '⏰')" title="Alarm App">⏰</div>
+        <div class="dock-app-icon" onclick="launchWindow('Terminal', '💻')" title="Console">💻</div>
     </div>
 
-    <div class="dynamic-island-container">
-        <div class="dynamic-island" id="island-node">
+    <div class="system-top-bar">
+        <button class="sys-btn" onclick="mutateIslandState('search')">🔍 Search</button>
+        <button class="sys-btn" onclick="mutateIslandState('media')">🎵 Audio Stream</button>
+        <button class="sys-btn" onclick="mutateIslandState('settings')">⚙️ Control Center</button>
+
+        <button class="sys-btn primary" onclick="populateAll50Widgets()">📦 Spawn All 50 Widgets</button>
+        <button class="sys-btn" onclick="clearExtraWidgets()" style="background:rgba(255,59,48,0.2); border-color:rgba(255,59,48,0.4);">🗑️ Clear Grid</button>
+    </div>
+
+    <div class="dynamic-island-wrapper">
+        <div class="dynamic-island" id="island-node" onclick="collapseIslandState()">
             
-            <div class="island-content-wrapper show-content" id="content-default">
-                <span class="island-compact" style="font-size:0.75rem; font-weight:600; letter-spacing:0.5px;"></span>
+            <div class="island-view active" id="view-default">
+                <span style="font-size:0.75rem; font-weight:600; letter-spacing:0.5px; opacity:0.85;">iWidgetOS v4.0</span>
             </div>
 
-            <div class="island-content-wrapper" id="content-search">
-                <input type="text" id="google-query" class="search-input" placeholder="Search Google..." onkeydown="handleSearchKey(event)">
-                <button class="search-go-btn" onclick="executeGoogleSearch()" style="margin-left:8px;">   </button>
+            <div class="island-view" id="view-search" onclick="event.stopPropagation()">
+                <input type="text" class="island-input" placeholder="Search system commands...">
             </div>
 
-            <div class="island-content-wrapper siri-panel" id="content-siri">
-                <span id="siri-transcript-node" style="font-size:0.7rem; font-weight:600; opacity:0.8; letter-spacing:0.5px; text-align:center;">Listening to Voice Input...</span>
-                <canvas class="siri-canvas" id="siri-wave-canvas"></canvas>
-            </div>
-
-            <div class="island-content-wrapper" id="content-media" style="flex-direction:column; gap:4px; width:100%;">
-                <div style="display:flex; justify-content:space-between; width:100%; font-size:0.75rem; font-weight:bold; padding:0 10px;">
-                    <span id="media-title-label">SoundHelix Stream</span>
-                    <span id="media-time-label">0:00</span>
-                </div>
-                <div style="display:flex; gap:15px; align-items:center;">
-                    <button class="btn" onclick="toggleMasterMusic()" id="island-play-btn" style="padding:2px 8px; font-size:0.7rem;">Play</button>
-                    <button class="btn" onclick="triggerIslandState('upload')" style="padding:2px 8px; font-size:0.7rem; background:#007aff;">Upload Routing</button>
+            <div class="island-view" id="view-media">
+                <div style="font-size: 0.75rem; width:100%;">
+                    <div style="font-weight:bold;">SoundHelix Stream Engine</div>
+                    <div style="opacity:0.6; font-size:0.65rem;">Audio Pipelines Running Smoothly</div>
                 </div>
             </div>
 
-            <div class="island-content-wrapper" id="content-upload" style="flex-direction:column; gap:6px; width:100%; padding:5px;">
-                <div style="display:flex; gap:4px; width:100%;">
-                    <input type="text" id="asset-url-field" class="search-input" placeholder="Paste Audio/Video Track URL...">
-                    <button class="btn" onclick="loadAssetUrl()" style="padding:4px 8px;">Load</button>
-                </div>
-                <div style="display:flex; gap:10px; justify-content:center; width:100%;">
-                    <label class="btn" style="padding:3px 8px; font-size:0.7rem; margin:0; cursor:pointer;">📁 Upload MP3 <input type="file" id="audio-file-hook" accept="audio/mpeg,audio/mp3,audio/*" onchange="uploadAudioAsset(event)" style="display:none;"></label>
-                    <label class="btn" style="padding:3px 8px; font-size:0.7rem; margin:0; cursor:pointer;">🎬 Upload Video <input type="file" id="video-file-hook" accept="video/mp4,video/*" onchange="uploadVideoAsset(event)" style="display:none;"></label>
-                </div>
-            </div>
-
-            <div class="island-content-wrapper" id="content-settings" style="width:100%; height:100%;">
-                <div class="settings-container-layout">
-                    <div style="display:flex; justify-content:space-between; width:100%; font-size:0.75rem; font-weight:bold; margin-bottom:6px; border-bottom:1px solid #222; padding-bottom:3px;">
-                        <span>ENVIRONMENT DEPLOYMENT SYSTEM (60 OPTIONS)</span>
-                    </div>
-                    <div class="settings-grid-pane">
-                        <div class="setting-row"><span>1. Active Background</span><input type="checkbox" checked onchange="setOpt(1, this.checked)"></div>
-                        <div class="setting-row"><span>2. High Contrast UI</span><input type="checkbox" onchange="setOpt(2, this.checked)"></div>
-                        <div class="setting-row"><span>3. Continuous API Loop</span><input type="checkbox" checked onchange="setOpt(3, this.checked)"></div>
-                        <div class="setting-row"><span>4. Precision Chrono ms</span><input type="checkbox" checked onchange="setOpt(4, this.checked)"></div>
-                        <div class="setting-row"><span>5. Safe Overlay Grid</span><input type="checkbox" checked onchange="setOpt(5, this.checked)"></div>
-                        <div class="setting-row"><span>6. Dynamic Wave Visuals</span><input type="checkbox" onchange="setOpt(6, this.checked)"></div>
-                        <div class="setting-row"><span>7. Debug Console Mode</span><input type="checkbox" onchange="setOpt(7, this.checked)"></div>
-                        <div class="setting-row"><span>8. Secure Crypto Hooks</span><input type="checkbox" checked onchange="setOpt(8, this.checked)"></div>
-                        <div class="setting-row"><span>9. Smooth Jiggle Math</span><input type="checkbox" checked onchange="setOpt(9, this.checked)"></div>
-                        <div class="setting-row"><span>10. Video Aspect Match</span><input type="checkbox" checked onchange="setOpt(10, this.checked)"></div>
-                        
-                        <div class="setting-row"><span>11. Layout Matrix Scale</span><select onchange="setOpt(11, this.value)"><option value="1">100%</option><option value="0.85">85%</option><option value="1.15">115%</option></select></div>
-                        <div class="setting-row"><span>12. API Refresher Rate</span><select onchange="setOpt(12, this.value)"><option value="10">10s</option><option value="30">30s</option><option value="60">60s</option></select></div>
-                        <div class="setting-row"><span>13. Clock Frame Layout</span><select onchange="setOpt(13, this.value)"><option value="12">12 Hour</option><option value="24">24 Hour</option></select></div>
-                        <div class="setting-row"><span>14. Render Fractal Iter</span><select onchange="setOpt(14, this.value)"><option value="150">150</option><option value="50">50</option><option value="300">300</option></select></div>
-                        <div class="setting-row"><span>15. Edge Sweep Target</span><select onchange="setOpt(15, this.value)"><option value="search">Search</option><option value="media">Media</option></select></div>
-                        <div class="setting-row"><span>16. Currency Tracking</span><select onchange="setOpt(16, this.value)"><option value="USD">USD ($)</option><option value="EUR">EUR (€)</option></select></div>
-                        <div class="setting-row"><span>17. Temperature Scale</span><select onchange="setOpt(17, this.value)"><option value="F">Fahrenheit</option><option value="C">Celsius</option></select></div>
-                        <div class="setting-row"><span>18. Drop Shadow Weight</span><select onchange="setOpt(18, this.value)"><option value="0.2">Light</option><option value="0.5">Heavy</option></select></div>
-                        <div class="setting-row"><span>19. UI Layout Layering</span><select onchange="setOpt(19, this.value)"><option value="grid">Grid Flex</option><option value="block">Blocks</option></select></div>
-                        <div class="setting-row"><span>20. Audio Buffer Size</span><select onchange="setOpt(20, this.value)"><option value="4096">4096</option><option value="2048">2048</option></select></div>
-
-                        <div class="setting-row"><span>21. Engine Core Speed</span><input type="checkbox" checked onchange="setOpt(21, this.checked)"></div>
-                        <div class="setting-row"><span>22. Hardware Detection</span><input type="checkbox" checked onchange="setOpt(22, this.checked)"></div>
-                        <div class="setting-row"><span>23. Mock Network Static</span><input type="checkbox" onchange="setOpt(23, this.checked)"></div>
-                        <div class="setting-row"><span>24. Auto Collide Sweep</span><input type="checkbox" checked onchange="setOpt(24, this.checked)"></div>
-                        <div class="setting-row"><span>25. Local Storage State</span><input type="checkbox" checked onchange="setOpt(25, this.checked)"></div>
-                        <div class="setting-row"><span>26. Session Memory Stack</span><input type="checkbox" checked onchange="setOpt(26, this.checked)"></div>
-                        <div class="setting-row"><span>27. Device Vector Scan</span><input type="checkbox" onchange="setOpt(27, this.checked)"></div>
-                        <div class="setting-row"><span>28. Reduce Canvas Blur</span><input type="checkbox" onchange="setOpt(28, this.checked)"></div>
-                        <div class="setting-row"><span>29. Strict Token Rules</span><input type="checkbox" checked onchange="setOpt(29, this.checked)"></div>
-                        <div class="setting-row"><span>30. Hardware Thread Cap</span><input type="checkbox" checked onchange="setOpt(30, this.checked)"></div>
-                        <div class="setting-row"><span>31. Lock Aspect Scaling</span><input type="checkbox" checked onchange="setOpt(31, this.checked)"></div>
-                        <div class="setting-row"><span>32. Live Feed Animation</span><input type="checkbox" checked onchange="setOpt(32, this.checked)"></div>
-                        <div class="setting-row"><span>33. Fallback Fonts Array</span><input type="checkbox" checked onchange="setOpt(33, this.checked)"></div>
-                        <div class="setting-row"><span>34. Dynamic Island Edge</span><input type="checkbox" checked onchange="setOpt(34, this.checked)"></div>
-                        <div class="setting-row"><span>35. Build Mode Engine</span><input type="checkbox" onchange="setOpt(35, this.checked)"></div>
-
-                        <div class="setting-row"><span>36. Android Haptic Sync</span><input type="checkbox" onchange="setOpt(36, this.checked)"></div>
-                        <div class="setting-row"><span>37. iOS Smooth Bounce</span><input type="checkbox" checked onchange="setOpt(37, this.checked)"></div>
-                        <div class="setting-row"><span>38. Material You Tint</span><input type="checkbox" onchange="setOpt(38, this.checked)"></div>
-                        <div class="setting-row"><span>39. OLED Pure Black</span><input type="checkbox" onchange="setOpt(39, this.checked)"></div>
-                        <div class="setting-row"><span>40. Blur Optimization</span><input type="checkbox" checked onchange="setOpt(40, this.checked)"></div>
-                        <div class="setting-row"><span>41. Frame Rate Cap 60hz</span><input type="checkbox" onchange="setOpt(41, this.checked)"></div>
-                        <div class="setting-row"><span>42. Thermal Limiter</span><input type="checkbox" checked onchange="setOpt(42, this.checked)"></div>
-                        <div class="setting-row"><span>43. Low Power Battery</span><input type="checkbox" onchange="setOpt(43, this.checked)"></div>
-                        <div class="setting-row"><span>44. Cache Asset Buffers</span><input type="checkbox" checked onchange="setOpt(44, this.checked)"></div>
-                        <div class="setting-row"><span>45. Auto Clear Logs</span><input type="checkbox" onchange="setOpt(45, this.checked)"></div>
-                        <div class="setting-row"><span>46. Sub-Pixel Text Smooth</span><input type="checkbox" checked onchange="setOpt(46, this.checked)"></div>
-                        <div class="setting-row"><span>47. Secure Storage Crypt</span><input type="checkbox" onchange="setOpt(47, this.checked)"></div>
-                        <div class="setting-row"><span>48. Smart Stack Carousel</span><input type="checkbox" checked onchange="setOpt(48, this.checked)"></div>
-                        <div class="setting-row"><span>49. Swipe Sensor Scope</span><select onchange="setOpt(49, this.value)"><option value="20">20px</option><option value="50">50px</option></select></div>
-                        <div class="setting-row"><span>50. Dynamic Canvas Multi</span><select onchange="setOpt(50, this.value)"><option value="1">1x</option><option value="2">2x</option></select></div>
-                        <div class="setting-row"><span>51. Micro-Haptic Weight</span><select onchange="setOpt(51, this.value)"><option value="light">Light</option><option value="heavy">Heavy</option></select></div>
-                        <div class="setting-row"><span>52. Status Network Flag</span><select onchange="setOpt(52, this.value)"><option value="LTE">5G / LTE</option><option value="WiFi">WiFi Core</option></select></div>
-                        <div class="setting-row"><span>53. Gesture Gravity Snap</span><input type="checkbox" checked onchange="setOpt(53, this.checked)"></div>
-                        <div class="setting-row"><span>54. DNS Resolution Proxy</span><input type="checkbox" onchange="setOpt(54, this.checked)"></div>
-                        <div class="setting-row"><span>55. CORS Proxy Bypass</span><input type="checkbox" onchange="setOpt(55, this.checked)"></div>
-                        <div class="setting-row"><span>56. Frame Buffering Sync</span><input type="checkbox" checked onchange="setOpt(56, this.checked)"></div>
-                        <div class="setting-row"><span>57. Audio Stream Compressor</span><input type="checkbox" onchange="setOpt(57, this.checked)"></div>
-                        <div class="setting-row"><span>58. Siri Filter Response</span><input type="checkbox" checked onchange="setOpt(58, this.checked)"></div>
-                        <div class="setting-row"><span>59. Beta Experimental Hooks</span><input type="checkbox" checked onchange="setOpt(59, this.checked)"></div>
-                        <div class="setting-row"><span>60. Runtime Profiler Node</span><input type="checkbox" onchange="setOpt(60, this.checked)"></div>
-                    </div>
+            <div class="island-view" id="view-settings" onclick="event.stopPropagation()" style="flex-direction:column; padding-top:10px;">
+                <span style="font-size:0.65rem; font-weight:bold; opacity:0.4; margin-bottom:6px; width:100%;">SYSTEM CONFIGURATION TUNING MATRIX</span>
+                <div style="display:grid; grid-template-columns: repeat(2,1fr); gap:6px; width:100%; overflow-y:auto; flex:1; padding-right:2px;">
+                    <label style="font-size:0.7rem; display:flex; justify-content:space-between; background:rgba(255,255,255,0.05); padding:4px 8px; border-radius:6px;">Animation Fast <input type="checkbox" checked></label>
+                    <label style="font-size:0.7rem; display:flex; justify-content:space-between; background:rgba(255,255,255,0.05); padding:4px 8px; border-radius:6px;">GPU Buffering <input type="checkbox" checked></label>
+                    <label style="font-size:0.7rem; display:flex; justify-content:space-between; background:rgba(255,255,255,0.05); padding:4px 8px; border-radius:6px;">TallFont Clock <input type="checkbox" checked></label>
+                    <label style="font-size:0.7rem; display:flex; justify-content:space-between; background:rgba(255,255,255,0.05); padding:4px 8px; border-radius:6px;">Auto-Dock <input type="checkbox" checked></label>
                 </div>
             </div>
 
         </div>
     </div>
 
-    <div class="bench-window" id="bench-box">
-        <h3 style="margin-bottom:10px; letter-spacing:1px; font-size:1rem;">HARDWARE PROBE</h3>
-        <canvas id="bench-canvas" width="200" height="130" style="background:#111; border-radius:12px; margin-bottom:15px; border:1px solid #333;"></canvas>
-        <button class="btn" id="run-bench-btn" style="background:#34c759; margin-bottom:15px; width:80%; justify-content:center;" onclick="startGpuTest()">Run Stress Test</button>
-        <div id="bench-output" style="text-align:center; font-family:monospace; font-size:0.85rem; line-height:1.4;">
-            Status: Idle Engine<br>Score: -- GPU-pts
-        </div>
-        <button class="btn" style="margin-top:auto; background:#ff3b30;" onclick="closeBench()">Dismiss Window</button>
-    </div>
-
-    <div class="ios-clock-container">
-        <div class="ios-date" id="ios-date">LOADING...</div>
-        <div class="ios-clock" id="ios-clock">00:00 AM</div>
-    </div>
-
-    <div class="widget-grid" id="main-app-grid">
-        <div class="widget" id="wd-1" draggable="false">
-            <div class="remove-badge" onclick="hideWidget('wd-1')">−</div>
-            <div class="widget-title">Control Suite</div>
-            <div class="cc-grid-button-box">
-                <div class="cc-btn-node active" id="cc-wifi" onclick="toggleCcWiFi()">WiFi: ON</div>
-                <div class="cc-btn-node" id="cc-theme" onclick="toggleCcTheme()">Theme: Dark</div>
+    <div class="workspace-canvas" id="main-workspace">
+        
+        <div class="widget-frame" style="grid-column: span 2;">
+            <div class="widget-header">
+                <span>Tall Digital Clock</span>
+                <span style="color:var(--accent-green); font-size:0.6rem;">LOCAL ROOT FONT</span>
             </div>
-            <div class="widget-desc">System Operations</div>
-        </div>
-
-        <div class="widget" id="wd-2" draggable="false"><div class="remove-badge" onclick="hideWidget('wd-2')">−</div><div class="widget-title">Net Speed</div><div class="widget-value" id="v2">--</div><div class="widget-desc" id="d2">Web Connection</div></div>
-        <div class="widget" id="wd-3" draggable="false"><div class="remove-badge" onclick="hideWidget('wd-3')">−</div><div class="widget-title">Engine</div><div class="widget-value" id="v3">Online</div><div class="widget-desc">Browser State</div></div>
-        <div class="widget" id="wd-4" draggable="false"><div class="remove-badge" onclick="hideWidget('wd-4')">−</div><div class="widget-title">Screen W</div><div class="widget-value" id="v4">--</div><div class="widget-desc">Pixels Wide</div></div>
-        <div class="widget" id="wd-5" draggable="false"><div class="remove-badge" onclick="hideWidget('wd-5')">−</div><div class="widget-title">Screen H</div><div class="widget-value" id="v5">--</div><div class="widget-desc">Pixels High</div></div>
-        <div class="widget" id="wd-6" draggable="false"><div class="remove-badge" onclick="hideWidget('wd-6')">−</div><div class="widget-title">CPU Cores</div><div class="widget-value" id="v6">--</div><div class="widget-desc">Logical Processors</div></div>
-        <div class="widget" id="wd-7" draggable="false"><div class="remove-badge" onclick="hideWidget('wd-7')">−</div><div class="widget-title">Language</div><div class="widget-value" id="v7">--</div><div class="widget-desc">System Default</div></div>
-        <div class="widget" id="wd-8" draggable="false"><div class="remove-badge" onclick="hideWidget('wd-8')">−</div><div class="widget-title">Cookies</div><div class="widget-value" id="v8">--</div><div class="widget-desc">Cookie Permission</div></div>
-        <div class="widget" id="wd-9" draggable="false"><div class="remove-badge" onclick="hideWidget('wd-9')">−</div><div class="widget-title">History</div><div class="widget-value" id="v9">--</div><div class="widget-desc">Session Length</div></div>
-        <div class="widget" id="wd-10" draggable="false"><div class="remove-badge" onclick="hideWidget('wd-10')">−</div><div class="widget-title">Platform</div><div class="widget-value" id="v10">--</div><div class="widget-desc">Device Hardware</div></div>
-        <div class="widget" id="wd-11" draggable="false"><div class="remove-badge" onclick="hideWidget('wd-11')">−</div><div class="widget-title">Bitcoin</div><div class="widget-value" id="v11">Loading...</div><div class="widget-desc" id="d11">CoinGecko API</div></div>
-        <div class="widget" id="wd-12" draggable="false"><div class="remove-badge" onclick="hideWidget('wd-12')">−</div><div class="widget-title">Ethereum</div><div class="widget-value" id="v12">Loading...</div><div class="widget-desc" id="d12">CoinGecko API</div></div>
-        <div class="widget" id="wd-13" draggable="false"><div class="remove-badge" onclick="hideWidget('wd-13')">−</div><div class="widget-title">Solana</div><div class="widget-value" id="v13">Loading...</div><div class="widget-desc" id="d13">CoinGecko API</div></div>
-        <div class="widget" id="wd-14" draggable="false"><div class="remove-badge" onclick="hideWidget('wd-14')">−</div><div class="widget-title">Dogecoin</div><div class="widget-value" id="v14">Loading...</div><div class="widget-desc" id="d14">CoinGecko API</div></div>
-        <div class="widget" id="wd-15" draggable="false"><div class="remove-badge" onclick="hideWidget('wd-15')">−</div><div class="widget-title">Your City</div><div class="widget-value" id="v15">Detecting...</div><div class="widget-desc" id="d15">IP Geolocation</div></div>
-        <div class="widget" id="wd-16" draggable="false"><div class="remove-badge" onclick="hideWidget('wd-16')">−</div><div class="widget-title">Country</div><div class="widget-value" id="v16">Detecting...</div><div class="widget-desc" id="d16">IP Geolocation</div></div>
-        <div class="widget" id="wd-17" draggable="false"><div class="remove-badge" onclick="hideWidget('wd-17')">−</div><div class="widget-title">Local Temp</div><div class="widget-value" id="v17">Detecting...</div><div class="widget-desc" id="d17">OpenMeteo API</div></div>
-        <div class="widget" id="wd-18" draggable="false"><div class="remove-badge" onclick="hideWidget('wd-18')">−</div><div class="widget-title">Currency</div><div class="widget-value" id="v18">--</div><div class="widget-desc">Local Fiat Code</div></div>
-
-        <div class="widget" id="wd-smartstack" draggable="false">
-            <div class="remove-badge" onclick="hideWidget('wd-smartstack')">−</div>
-            <div class="smart-stack-frame" id="smart-stack-node">
-                <div class="stack-nav-indicators">
-                    <div class="stack-dot active" onclick="setStackIndex(0)"></div>
-                    <div class="stack-dot" onclick="setStackIndex(1)"></div>
-                </div>
-                <div class="stack-layer active">
-                    <div class="widget-title">Fact Check</div>
-                    <div class="widget-value" style="font-size:0.9rem;" id="v19">Loading Stack Fact...</div>
-                    <div class="widget-desc">Useless Facts API</div>
-                </div>
-                <div class="stack-layer">
-                    <div class="widget-title">Activity</div>
-                    <div class="widget-value" style="font-size:0.95rem;" id="v20">Bake a chocolate cake</div>
-                    <div class="widget-desc">Suggestion Engine</div>
-                </div>
+            <div class="clock-widget-body">
+                <div class="clock-digits" id="clock-display">00:00:00</div>
+                <div class="clock-subtext" id="date-display">LOADING SYSTEM DATE...</div>
             </div>
         </div>
 
-        <div class="widget" id="wd-21" draggable="false"><div class="remove-badge" onclick="hideWidget('wd-21')">−</div><div class="widget-title">UTC Time</div><div class="widget-value" id="v21">--</div><div class="widget-desc">Coordinated Universal</div></div>
-        <div class="widget" id="wd-22" draggable="false"><div class="remove-badge" onclick="hideWidget('wd-22')">−</div><div class="widget-title">TZ Offset</div><div class="widget-value" id="v22">--</div><div class="widget-desc" id="d22">Zone</div></div>
-        <div class="widget" id="wd-23" draggable="false"><div class="remove-badge" onclick="hideWidget('wd-23')">−</div><div class="widget-title">Day Progress</div><div class="widget-value" id="v23">--</div><div class="widget-desc">Percent of Day Done</div></div>
-        <div class="widget" id="wd-24" draggable="false"><div class="remove-badge" onclick="hideWidget('wd-24')">−</div><div class="widget-title">Year Progress</div><div class="widget-value" id="v24">--</div><div class="widget-desc">Percent of Year Done</div></div>
-        <div class="widget" id="wd-25" draggable="false"><div class="remove-badge" onclick="hideWidget('wd-25')">−</div><div class="widget-title">Unix Epoch</div><div class="widget-value" style="font-size:1.1rem;" id="v25">--</div><div class="widget-desc">Seconds since 1970</div></div>
-        <div class="widget" id="wd-26" draggable="false"><div class="remove-badge" onclick="hideWidget('wd-26')">−</div><div class="widget-title">Day Number</div><div class="widget-value" id="v26">--</div><div class="widget-desc">Out of 365 days</div></div>
-        <div class="widget" id="wd-27" draggable="false"><div class="remove-badge" onclick="hideWidget('wd-27')">−</div><div class="widget-title">Month</div><div class="widget-value" id="v27">--</div><div class="widget-desc">Calendar Month</div></div>
-        <div class="widget" id="wd-28" draggable="false"><div class="remove-badge" onclick="hideWidget('wd-28')">−</div><div class="widget-title">Weekday</div><div class="widget-value" id="v28">--</div><div class="widget-desc">Current Day Name</div></div>
-        <div class="widget" id="wd-29" draggable="false"><div class="remove-badge" onclick="hideWidget('wd-29')">−</div><div class="widget-title">Leap Year</div><div class="widget-value" id="v29">--</div><div class="widget-desc">Calculation Check</div></div>
-        <div class="widget" id="wd-30" draggable="false"><div class="remove-badge" onclick="hideWidget('wd-30')">−</div><div class="widget-title">HighRes Ms</div><div class="widget-value" id="v30">--</div><div class="widget-desc">Time spent on page</div></div>
-        <div class="widget" id="wd-31" draggable="false"><div class="remove-badge" onclick="hideWidget('wd-31')">−</div><div class="widget-title">Pi Constant</div><div class="widget-value" id="v31">3.14159</div><div class="widget-desc">Math.PI Engine</div></div>
-        <div class="widget" id="wd-32" draggable="false"><div class="remove-badge" onclick="hideWidget('wd-32')">−</div><div class="widget-title">Euler No.</div><div class="widget-value" id="v32">2.71828</div><div class="widget-desc">Math.E Engine</div></div>
-        <div class="widget" id="wd-33" draggable="false"><div class="remove-badge" onclick="hideWidget('wd-33')">−</div><div class="widget-title">JS Heap</div><div class="widget-value" id="v33">--</div><div class="widget-desc">Memory Allocated</div></div>
-        <div class="widget" id="wd-34" draggable="false"><div class="remove-badge" onclick="hideWidget('wd-34')">−</div><div class="widget-title">Touch Support</div><div class="widget-value" id="v34">--</div><div class="widget-desc">Max Touch Tracks</div></div>
-        <div class="widget" id="wd-35" draggable="false"><div class="remove-badge" onclick="hideWidget('wd-35')">−</div><div class="widget-title">Local Store</div><div class="widget-value" id="v35">--</div><div class="widget-desc">Saved Keys Count</div></div>
-        <div class="widget" id="wd-36" draggable="false"><div class="remove-badge" onclick="hideWidget('wd-36')">−</div><div class="widget-title">Session Store</div><div class="widget-value" id="v36">--</div><div class="widget-desc">Temporary Keys</div></div>
-        <div class="widget" id="wd-37" draggable="false"><div class="remove-badge" onclick="hideWidget('wd-37')">−</div><div class="widget-title">PDF View</div><div class="widget-value" id="v37">--</div><div class="widget-desc">Native PDF Support</div></div>
-        <div class="widget" id="wd-38" draggable="false"><div class="remove-badge" onclick="hideWidget('wd-38')">−</div><div class="widget-title">Audio Web API</div><div class="widget-value" id="v38">--</div><div class="widget-desc">Web Audio State</div></div>
-        <div class="widget" id="wd-39" draggable="false"><div class="remove-badge" onclick="hideWidget('wd-39')">−</div><div class="widget-title">Crypto Module</div><div class="widget-value" id="v39">--</div><div class="widget-desc">Security Encryption</div></div>
-        <div class="widget" id="wd-40" draggable="false"><div class="remove-badge" onclick="hideWidget('wd-40')">−</div><div class="widget-title">Device Motion</div><div class="widget-value" id="v40">--</div><div class="widget-desc">Sensors Detection</div></div>
-        <div class="widget" id="wd-41" draggable="false"><div class="remove-badge" onclick="hideWidget('wd-41')">−</div><div class="widget-title">Screen Rotate</div><div class="widget-value" style="font-size:1.1rem;" id="v41">--</div><div class="widget-desc">Orientation State</div></div>
-        <div class="widget" id="wd-42" draggable="false"><div class="remove-badge" onclick="hideWidget('wd-42')">−</div><div class="widget-title">Theme Mode</div><div class="widget-value" id="v42">--</div><div class="widget-desc">System Appearance Flag</div></div>
-        <div class="widget" id="wd-43" draggable="false"><div class="remove-badge" onclick="hideWidget('wd-43')">−</div><div class="widget-title">Reduce Motion</div><div class="widget-value" id="v43">--</div><div class="widget-desc">Accessibility Setting</div></div>
-        <div class="widget" id="wd-44" draggable="false"><div class="remove-badge" onclick="hideWidget('wd-44')">−</div><div class="widget-title">Network RTT</div><div class="widget-value" id="v44">--</div><div class="widget-desc">Connection Delay</div></div>
-        <div class="widget" id="wd-45" draggable="false"><div class="remove-badge" onclick="hideWidget('wd-45')">−</div><div class="widget-title">Data Saver</div><div class="widget-value" id="v45">--</div><div class="widget-desc">Save Bandwidth Toggle</div></div>
-        <div class="widget" id="wd-46" draggable="false"><div class="remove-badge" onclick="hideWidget('wd-46')">−</div><div class="widget-title">Speech Engine</div><div class="widget-value" id="v46">--</div><div class="widget-desc">Text To Speech</div></div>
-        <div class="widget" id="wd-47" draggable="false"><div class="remove-badge" onclick="hideWidget('wd-47')">−</div><div class="widget-title">ServiceWorker</div><div class="widget-value" id="v47">--</div><div class="widget-desc">Background Worker</div></div>
-        <div class="widget" id="wd-48" draggable="false"><div class="remove-badge" onclick="hideWidget('wd-48')">−</div><div class="widget-title">Geolocation</div><div class="widget-value" id="v48">--</div><div class="widget-desc">GPS Core Flag</div></div>
-        <div class="widget" id="wd-49" draggable="false"><div class="remove-badge" onclick="hideWidget('wd-49')">−</div><div class="widget-title">Encoding</div><div class="widget-value" id="v49">--</div><div class="widget-desc">Character Set</div></div>
-        <div class="widget" id="wd-50" draggable="false"><div class="remove-badge" onclick="hideWidget('wd-50')">−</div><div class="widget-title">OS Build</div><div class="widget-value">v1.1.1</div><div class="widget-desc">iWidgetOS Stable</div></div>
+        <div class="widget-frame" style="grid-column: span 2;">
+            <div class="widget-header">Compute Hardware Benchmarking Probe</div>
+            <div style="display:flex; gap:15px; flex:1; align-items:center;">
+                <div>
+                    <div class="bench-sub">Thread Latency Cycle</div>
+                    <div class="bench-metric" id="bench-delta">0.00 ms</div>
+                </div>
+                <div>
+                    <div class="bench-sub">Render FPS Output</div>
+                    <div class="bench-metric" id="bench-fps" style="color:#007aff;">0 FPS</div>
+                </div>
+                <button class="sys-btn" onclick="executeThreadStressTest()" style="margin-left:auto;">Run Thread Stress Test</button>
+            </div>
+        </div>
+
+        <div class="widget-frame">
+            <div class="widget-header">Redirect Suite</div>
+            <div class="shortcut-grid">
+                <a href="https://www.apple.com" target="_blank" class="shortcut-node">
+                    <img src="https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?w=80&auto=format&fit=crop" class="shortcut-icon" alt="Apple">
+                    <div class="shortcut-label">Apple</div>
+                </a>
+                <a href="https://www.google.com" target="_blank" class="shortcut-node">
+                    <img src="https://images.unsplash.com/photo-1573804633927-bfcbcd909acd?w=80&auto=format&fit=crop" class="shortcut-icon" alt="Google">
+                    <div class="shortcut-label">Google</div>
+                </a>
+                <a href="https://www.github.com" target="_blank" class="shortcut-node">
+                    <img src="https://images.unsplash.com/photo-1618401471353-b98aedd07871?w=80&auto=format&fit=crop" class="shortcut-icon" alt="GitHub">
+                    <div class="shortcut-label">GitHub</div>
+                </a>
+            </div>
+        </div>
+
     </div>
 
     <script>
-        // --- Dynamic Island Master Finite State Machine System ---
-        const islandNode = document.getElementById('island-node');
-        const wrappers = {
-            'default': document.getElementById('content-default'),
-            'search': document.getElementById('content-search'),
-            'media': document.getElementById('content-media'),
-            'upload': document.getElementById('content-upload'),
-            'settings': document.getElementById('content-settings'),
-            'siri': document.getElementById('content-siri')
-        };
-        let activeIslandState = 'default';
-        let edgeSweepSetting = 'search';
-
-        function triggerIslandState(targetState) {
-            islandNode.classList.remove('state-search', 'state-media', 'state-upload', 'state-settings', 'state-siri');
-            Object.keys(wrappers).forEach(k => wrappers[k].classList.remove('show-content'));
-
-            if(activeIslandState === targetState && targetState !== 'default') {
-                activeIslandState = 'default';
-            } else {
-                activeIslandState = targetState;
-            }
-
-            if(activeIslandState !== 'default') {
-                islandNode.classList.add(`state-${activeIslandState}`);
-                setTimeout(() => {
-                    wrappers[activeIslandState].classList.add('show-content');
-                    if(activeIslandState === 'search') document.getElementById('google-query').focus();
-                    if(activeIslandState === 'siri') startSiriAnimationLoop();
-                }, 150);
-            } else {
-                wrappers['default'].classList.add('show-content');
-                stopSiriVoiceEngine();
-            }
-        }
-
-        document.addEventListener('click', function(e) {
-            const isClickInsideIsland = islandNode.contains(e.target);
-            const isTopBarBtn = e.target.closest('.top-bar');
-            if (!isClickInsideIsland && !isTopBarBtn && activeIslandState !== 'default' && activeIslandState !== 'siri') {
-                triggerIslandState('default');
-            }
-        });
-
-        function executeGoogleSearch() {
-            const q = document.getElementById('google-query').value.trim();
-            if (q !== "") {
-                window.open(`https://www.google.com/search?q=${encodeURIComponent(q)}`, '_blank');
-                document.getElementById('google-query').value = "";
-                triggerIslandState('default');
-            }
-        }
-        function handleSearchKey(e) { if (e.key === 'Enter') executeGoogleSearch(); }
-
-        // --- VoiceToSearch (Beta) Engine Architecture ---
-        let recognitionEngine = null;
-        let siriAnimationId = null;
-        const siriCanvas = document.getElementById('siri-wave-canvas');
-        const siriCtx = siriCanvas.getContext('2d');
-        let siriWavePhase = 0;
-
-        function toggleVoiceToSearch() {
-            const masterVtsBtn = document.getElementById('vts-master-btn');
-            if (activeIslandState !== 'siri') {
-                triggerIslandState('siri');
-                masterVtsBtn.innerText = "🛑 Stop Listening";
-                masterVtsBtn.style.background = "#34c759";
-                initializeSpeechRecognition();
-            } else {
-                triggerIslandState('default');
-                masterVtsBtn.innerText = "🎤 VoiceToSearch (Beta)";
-                masterVtsBtn.style.background = "#ff2d55";
-            }
-        }
-
-        function initializeSpeechRecognition() {
-            const SpeechLib = window.SpeechRecognition || window.webkitSpeechRecognition;
-            if (!SpeechLib) {
-                document.getElementById('siri-transcript-node').innerText = "Web Speech API Not Supported";
-                return;
-            }
-            recognitionEngine = new SpeechLib();
-            recognitionEngine.continuous = false;
-            recognitionEngine.interimResults = false;
-            recognitionEngine.lang = 'en-US';
-
-            recognitionEngine.onstart = () => {
-                document.getElementById('siri-transcript-node').innerText = "Speak now...";
-            };
-
-            recognitionEngine.onerror = (err) => {
-                document.getElementById('siri-transcript-node').innerText = "Voice Error or Timeout";
-                setTimeout(() => toggleVoiceToSearch(), 1500);
-            };
-
-            recognitionEngine.onresult = (event) => {
-                const spokenOutput = event.results[0][0].transcript;
-                document.getElementById('siri-transcript-node').innerText = `"${spokenOutput}"`;
-                setTimeout(() => {
-                    window.open(`https://www.google.com/search?q=${encodeURIComponent(spokenOutput)}`, '_blank');
-                    toggleVoiceToSearch();
-                }, 800);
-            };
-
-            recognitionEngine.start();
-        }
-
-        function stopSiriVoiceEngine() {
-            if (recognitionEngine) {
-                recognitionEngine.abort();
-                recognitionEngine = null;
-            }
-            if (siriAnimationId) {
-                cancelAnimationFrame(siriAnimationId);
-                siriAnimationId = null;
-            }
-            const masterVtsBtn = document.getElementById('vts-master-btn');
-            if(masterVtsBtn) {
-                masterVtsBtn.innerText = "🎤 VoiceToSearch (Beta)";
-                masterVtsBtn.style.background = "#ff2d55";
-            }
-        }
-
-        function startSiriAnimationLoop() {
-            siriCanvas.width = siriCanvas.offsetWidth;
-            siriCanvas.height = siriCanvas.offsetHeight;
-            
-            function renderSiriWaves() {
-                siriCtx.clearRect(0, 0, siriCanvas.width, siriCanvas.height);
-                siriWavePhase += 0.15;
-                
-                // Render 3 overlapping fluid dynamic color wave paths
-                drawSineWave("#007aff", 0.6, 3, 2);
-                drawSineWave("#ff2d55", 0.5, 4, -1.5);
-                drawSineWave("#34c759", 0.4, 2, 1);
-                
-                siriAnimationId = requestAnimationFrame(renderSiriWaves);
-            }
-            siriAnimationId = requestAnimationFrame(renderSiriWaves);
-        }
-
-        function drawSineWave(color, opacity, amplitude, speedMod) {
-            siriCtx.save();
-            siriCtx.beginPath();
-            siriCtx.strokeStyle = color;
-            siriCtx.globalAlpha = opacity;
-            siriCtx.lineWidth = 2.5;
-
-            const w = siriCanvas.width;
-            const h = siriCanvas.height;
-            const midY = h / 2;
-
-            for (let x = 0; x < w; x++) {
-                // Generates smooth sinusoidal tracking parameters
-                const angle = (x / w) * Math.PI * 2.5 + (siriWavePhase * speedMod);
-                const y = midY + Math.sin(angle) * (amplitude * Math.sin(x / w * Math.PI));
-                if (x === 0) siriCtx.moveTo(x, y);
-                else siriCtx.lineTo(x, y);
-            }
-            siriCtx.stroke();
-            siriCtx.restore();
-        }
-
-
-        // --- Audio Tracking & Asynchronous Asset File Converters ---
-        const track = document.getElementById('bg-music');
-        const vNode = document.getElementById('bg-video-node');
-        let playing = false;
-        let isVideoActive = false;
-
-        function toggleMasterMusic() {
-            const islandBtn = document.getElementById('island-play-btn');
-            if(!playing) {
-                if(isVideoActive) vNode.play();
-                else track.play();
-                islandBtn.innerText = "Mute";
-                playing = true;
-            } else {
-                track.pause();
-                vNode.pause();
-                islandBtn.innerText = "Play";
-                playing = false;
-            }
-        }
-
-        track.addEventListener('timeupdate', () => {
-            const cur = Math.floor(track.currentTime);
-            document.getElementById('media-time-label').innerText = `${Math.floor(cur/60)}:${String(cur%60).padStart(2,'0')}`;
-        });
-
-        function loadAssetUrl() {
-            const url = document.getElementById('asset-url-field').value.trim();
-            if(url) {
-                if(url.endsWith('.mp4') || url.includes('video')) {
-                    setupVideoPipeline(url, "Network Stream");
-                } else {
-                    track.src = url;
-                    document.getElementById('media-title-label').innerText = "Network Audio File";
-                    isVideoActive = false;
-                    vNode.style.display = 'none';
-                }
-                playing = false; toggleMasterMusic();
-                triggerIslandState('media');
-            }
-        }
-
-        // Asynchronous ArrayBuffer reader bypassing local sandbox MIME verification limits
-        function uploadAudioAsset(e) {
-            const file = e.target.files[0];
-            if(file) {
-                const reader = new FileReader();
-                reader.onload = function(evt) {
-                    track.src = evt.target.result;
-                    document.getElementById('media-title-label').innerText = file.name.substring(0, 16);
-                    isVideoActive = false;
-                    vNode.style.display = 'none';
-                    playing = false; toggleMasterMusic();
-                    triggerIslandState('media');
-                };
-                reader.readAsDataURL(file);
-            }
-        }
-
-        function uploadVideoAsset(e) {
-            const file = e.target.files[0];
-            if(file) {
-                const reader = new FileReader();
-                reader.onload = function(evt) {
-                    setupVideoPipeline(evt.target.result, file.name);
-                };
-                reader.readAsDataURL(file);
-            }
-        }
-
-        function setupVideoPipeline(src, label) {
-            track.pause();
-            vNode.src = src;
-            vNode.style.display = 'block';
-            document.getElementById('media-title-label').innerText = label.substring(0,16);
-            isVideoActive = true;
-            playing = false; toggleMasterMusic();
-            triggerIslandState('media');
-        }
-
-
-        // --- Real 60 Parameter Matrix Configuration Settings Engine ---
-        let configEngineOptions = {};
-        let isContinuousLoop = true;
-        let renderFractalIterations = 150;
-        let clockDisplayMode = "12";
-        let temperatureDisplayUnit = "F";
-
-        function setOpt(index, val) {
-            configEngineOptions[index] = val;
-            if(index === 1) document.body.style.background = val ? "var(--bg-gradient)" : "#111";
-            if(index === 2) document.documentElement.style.setProperty('--widget-bg', val ? "rgba(0,0,0,0.8)" : `rgba(255, 255, 255, ${document.getElementById('tint-slider').value / 100})`);
-            if(index === 3) isContinuousLoop = val;
-            if(index === 11) document.documentElement.style.setProperty('--global-font-scale', val);
-            if(index === 13) clockDisplayMode = val;
-            if(index === 14) renderFractalIterations = parseInt(val);
-            if(index === 15) edgeSweepSetting = val;
-            if(index === 17) temperatureDisplayUnit = val;
-            if(index === 39) {
-                if(val) {
-                    document.documentElement.style.setProperty('--bg-gradient', 'linear-gradient(135deg, #000 0%, #000 100%)');
-                    document.body.style.background = "#000000";
-                } else {
-                    document.documentElement.style.setProperty('--bg-gradient', 'linear-gradient(135deg, #111827 0%, #1f2937 50%, #111827 100%)');
-                }
-            }
-        }
-
-
-        // --- Layout Grid Sorting & Arrangement Engine ---
-        let isEditMode = false;
-        const mainGrid = document.getElementById('main-app-grid');
-        const hiddenWidgetsPool = {};
-
-        function toggleEditMode() {
-            isEditMode = !isEditMode;
-            const editBtn = document.getElementById('edit-layout-btn');
-            const addPanel = document.getElementById('add-panel');
-            
-            document.querySelectorAll('.widget').forEach(w => {
-                if(isEditMode) { w.classList.add('jiggling'); w.setAttribute('draggable', 'true'); }
-                else { w.classList.remove('jiggling'); w.setAttribute('draggable', 'false'); }
-            });
-
-            if(isEditMode) {
-                editBtn.classList.add('active-mode'); editBtn.innerText = "🛑 Done";
-                addPanel.style.display = "flex"; rebuildDropdownPool();
-            } else {
-                editBtn.classList.remove('active-mode'); editBtn.innerText = "🛠️ Edit Layout";
-                addPanel.style.display = "none";
-            }
-        }
-
-        function hideWidget(id) {
-            const el = document.getElementById(id);
-            if(el) {
-                const t = el.querySelector('.widget-title')?.innerText || "Custom Widget";
-                hiddenWidgetsPool[id] = { element: el, title: t };
-                el.style.display = 'none'; rebuildDropdownPool();
-            }
-        }
-
-        function rebuildDropdownPool() {
-            const s = document.getElementById('widget-pool-select'); s.innerHTML = '';
-            const keys = Object.keys(hiddenWidgetsPool);
-            if(keys.length === 0) { s.appendChild(new Option("Full Deck", "")); return; }
-            keys.forEach(k => s.appendChild(new Option(hiddenWidgetsPool[k].title, k)));
-        }
-
-        function triggerAddWidget() {
-            const id = document.getElementById('widget-pool-select').value;
-            if(id && hiddenWidgetsPool[id]) {
-                hiddenWidgetsPool[id].element.style.display = 'flex';
-                mainGrid.appendChild(hiddenWidgetsPool[id].element);
-                delete hiddenWidgetsPool[id]; rebuildDropdownPool();
-            }
-        }
-
-        let draggedItem = null;
-        mainGrid.addEventListener('dragstart', (e) => {
-            if(!isEditMode) { e.preventDefault(); return; }
-            draggedItem = e.target.closest('.widget');
-        });
-        mainGrid.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            const target = e.target.closest('.widget');
-            if(target && target !== draggedItem) {
-                const children = Array.from(mainGrid.children);
-                if(children.indexOf(draggedItem) < children.indexOf(target)) mainGrid.insertBefore(draggedItem, target.nextSibling);
-                else mainGrid.insertBefore(draggedItem, target);
-            }
-        });
-
-
-        // --- Smart Stack Rotator ---
-        let currentStackIdx = 0;
-        function setStackIndex(idx) {
-            currentStackIdx = idx;
-            const layers = document.querySelectorAll('#smart-stack-node .stack-layer');
-            const dots = document.querySelectorAll('#smart-stack-node .stack-dot');
-            layers.forEach((l, i) => l.classList.toggle('active', i === idx));
-            dots.forEach((d, i) => d.classList.toggle('active', i === idx));
-        }
-
-        // --- Interactive Control Center Suite Commands ---
-        let isWiFiConnected = true;
-        function toggleCcWiFi() {
-            isWiFiConnected = !isWiFiConnected;
-            const btnCc = document.getElementById('cc-wifi');
-            btnCc.classList.toggle('active', isWiFiConnected);
-            btnCc.innerText = isWiFiConnected ? "WiFi: ON" : "WiFi: OFF";
-        }
-        function toggleCcTheme() {
-            const btnCc = document.getElementById('cc-theme');
-            if(btnCc.innerText.includes("Dark")) {
-                document.documentElement.style.setProperty('--bg-gradient', 'linear-gradient(135deg, #e5e5ea 0%, #ffffff 100%)');
-                document.documentElement.style.setProperty('--text-color', '#000000');
-                btnCc.innerText = "Theme: Light";
-            } else {
-                document.documentElement.style.setProperty('--bg-gradient', 'linear-gradient(135deg, #111827 0%, #1f2937 50%, #111827 100%)');
-                document.documentElement.style.setProperty('--text-color', '#ffffff');
-                btnCc.innerText = "Theme: Dark";
-            }
-        }
-
-
-        // --- Real Hardware Core Fractal GPU Benchmarker ---
-        const benchBox = document.getElementById('bench-box');
-        const benchCanvas = document.getElementById('bench-canvas');
-        const benchCtx = benchCanvas.getContext('2d');
-        const benchOutput = document.getElementById('bench-output');
-
-        function openBench() { benchBox.classList.add('open'); }
-        function closeBench() { benchBox.classList.remove('open'); }
-
-        function startGpuTest() {
-            const runBtn = document.getElementById('run-bench-btn');
-            runBtn.disabled = true; runBtn.innerText = "Stressing Core...";
-            const start = performance.now();
-            let frame = 0, maxFrames = 25;
-
-            function drawMandelbrotFrame() {
-                const w = benchCanvas.width, h = benchCanvas.height;
-                const imgData = benchCtx.createImageData(w, h);
-                const zoom = 1.0 + (frame * 0.2);
-
-                for (let x = 0; x < w; x++) {
-                    for (let y = 0; y < h; y++) {
-                        let zr = 0, zi = 0;
-                        let cr = (x - w/1.5) * 4.0 / (w * zoom);
-                        let ci = (y - h/2.0) * 4.0 / (h * zoom);
-                        let i = 0;
-                        while (zr*zr + zi*zi < 4 && i < renderFractalIterations) {
-                            let temp = zr*zr - zi*zi + cr;
-                            zi = 2*zr*zi + ci; zr = temp; i++;
-                        }
-                        let pIdx = (x + y * w) * 4;
-                        imgData.data[pIdx] = (i * 9) % 255;
-                        imgData.data[pIdx+1] = (i * 3) % 255;
-                        imgData.data[pIdx+2] = (i * 5) % 255;
-                        imgData.data[pIdx+3] = 255;
-                    }
-                }
-                benchCtx.putImageData(imgData, 0, 0); frame++;
-                if(frame < maxFrames) requestAnimationFrame(drawMandelbrotFrame);
-                else {
-                    const total = performance.now() - start;
-                    const score = Math.floor((maxFrames / total) * 120000);
-                    benchOutput.innerHTML = `Latency: ${(total/maxFrames).toFixed(1)}ms/f<br><strong style='color:#34c759;'>Score: ${score.toLocaleString()} GPU-pts</strong>`;
-                    runBtn.disabled = false; runBtn.innerText = "Run Stress Test";
-                }
-            }
-            requestAnimationFrame(drawMandelbrotFrame);
-        }
-
-
-        // --- Gestural Edge Swipe Detector Interface ---
-        const dragZone = document.getElementById('drag-zone');
-        let touchStartX = 0;
-        dragZone.addEventListener('touchstart', (e) => touchStartX = e.touches[0].clientX);
-        dragZone.addEventListener('touchend', (e) => {
-            if (e.changedTouches[0].clientX - touchStartX > 30) triggerIslandState(edgeSweepSetting);
-        });
-        dragZone.addEventListener('mousedown', (e) => {
-            const handleMouseUp = (mEv) => {
-                if (mEv.clientX > 40) triggerIslandState(edgeSweepSetting);
-                document.removeEventListener('mouseup', handleMouseUp);
-            };
-            document.addEventListener('mouseup', handleMouseUp);
-        });
-
-
-        // --- Slider UI Hooks ---
-        const tint = document.getElementById('tint-slider');
-        const blur = document.getElementById('blur-slider');
-        function applyStyles() {
-            if(!configEngineOptions[2]) document.documentElement.style.setProperty('--widget-bg', `rgba(255, 255, 255, ${tint.value / 100})`);
-            document.documentElement.style.setProperty('--widget-blur', blur.value + 'px');
-        }
-        tint.addEventListener('input', applyStyles); blur.addEventListener('input', applyStyles); applyStyles();
-
-        // --- Core Time Calculations Engine Loop ---
-        function runClock() {
+        // --- Real-time Tall Clock Engine ---
+        function updateTallClock() {
             const now = new Date();
-            document.getElementById('ios-date').innerText = now.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
-            let h = now.getHours();
-            let m = String(now.getMinutes()).padStart(2, '0');
-            if(clockDisplayMode === "12") {
-                let ampm = h >= 12 ? 'PM' : 'AM'; h = h % 12 || 12;
-                document.getElementById('ios-clock').innerText = `${h}:${m} ${ampm}`;
-            } else {
-                document.getElementById('ios-clock').innerText = `${String(h).padStart(2,'0')}:${m}`;
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            
+            const clockNode = document.getElementById('clock-display');
+            if (clockNode) {
+                clockNode.innerText = `${hours}:${minutes}:${seconds}`;
+            }
+
+            const dateNode = document.getElementById('date-display');
+            if (dateNode) {
+                const options = { weekday: 'short', month: 'short', day: 'numeric' };
+                dateNode.innerText = now.toLocaleDateString(undefined, options);
             }
         }
-        setInterval(runClock, 1000); runClock();
+        setInterval(updateTallClock, 1000);
+        updateTallClock();
 
-        function loadSystemData() {
-            document.getElementById('v4').innerText = window.screen.width;
-            document.getElementById('v5').innerText = window.screen.height;
-            document.getElementById('v6').innerText = navigator.hardwareConcurrency || "Unknown";
-            document.getElementById('v7').innerText = navigator.language.toUpperCase();
-            document.getElementById('v8').innerText = navigator.cookieEnabled ? "Allowed" : "Blocked";
-            document.getElementById('v9').innerText = window.history.length;
-            document.getElementById('v10').innerText = navigator.maxTouchPoints > 0 ? "Mobile/Touch" : "Desktop PC";
-            document.getElementById('v34').innerText = navigator.maxTouchPoints;
-            document.getElementById('v35').innerText = localStorage.length;
-            document.getElementById('v36').innerText = sessionStorage.length;
-            document.getElementById('v37').innerText = navigator.pdfViewerEnabled ? "Yes" : "No";
-            document.getElementById('v38').innerText = (window.AudioContext) ? "Active" : "Disabled";
-            document.getElementById('v39').innerText = (window.crypto) ? "Secure" : "Missing";
-            document.getElementById('v40').innerText = (window.DeviceMotionEvent) ? "Supported" : "No Sensors";
-            document.getElementById('v41').innerText = screen.orientation ? screen.orientation.type.replace("-primary","").toUpperCase() : "PORTRAIT";
-            document.getElementById('v42').innerText = window.matchMedia('(prefers-color-scheme: dark)').matches ? "Dark" : "Light";
-            document.getElementById('v43').innerText = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? "Yes" : "No";
-            document.getElementById('v46').innerText = ('speechSynthesis' in window) ? "Ready" : "Missing";
-            document.getElementById('v47').innerText = ('serviceWorker' in navigator) ? "Supported" : "Unsupported";
-            document.getElementById('v48').innerText = (navigator.geolocation) ? "Supported" : "No GPS";
-            document.getElementById('v49').innerText = document.characterSet;
+        // --- 50 Widget Auto-Generator Catalog Suite ---
+        const widgetTemplates = [
+            { title: "CPU Core Matrix", val: "8 Cores @ 3.4GHz", sub: "Operational Status: 12%" },
+            { title: "RAM Allocation", val: "14.2 GB / 32 GB", sub: "LPDDR5 Unified Pool" },
+            { title: "Battery Status", val: "98% Charged", sub: "Power Source: Power Adapter" },
+            { title: "Network Speed", val: "340 Mbps", sub: "Wi-Fi 6E Connected" },
+            { title: "GPU VRAM Pool", val: "6.4 GB / 16 GB", sub: "Metal Engine Rendered" },
+            { title: "Storage Drive", val: "412 GB Free", sub: "NVMe PCIe Gen4" },
+            { title: "Weather Forecast", val: "72°F Sunny", sub: "Humidity: 45%" },
+            { title: "Calendar Event", val: "Team Sync @ 3 PM", sub: "Room 402 / Zoom" },
+            { title: "Audio Router", val: "AirPods Pro", sub: "Spatial Audio Active" },
+            { title: "Display Brightness", val: "85% Nits", sub: "True Tone Active" }
+        ];
+
+        function populateAll50Widgets() {
+            const workspace = document.getElementById('main-workspace');
+            clearExtraWidgets(); // Prevent double loading
+
+            for (let i = 1; i <= 50; i++) {
+                const template = widgetTemplates[(i - 1) % widgetTemplates.length];
+                const widgetHTML = `
+                    <div class="widget-frame dynamic-added-widget">
+                        <div class="widget-header">
+                            <span>Widget #${i} • ${template.title}</span>
+                        </div>
+                        <div style="margin-top:auto;">
+                            <div style="font-size:1.1rem; font-weight:bold; color:var(--text-primary);">${template.val}</div>
+                            <div style="font-size:0.65rem; opacity:0.6; margin-top:4px;">${template.sub}</div>
+                        </div>
+                    </div>
+                `;
+                workspace.insertAdjacentHTML('beforeend', widgetHTML);
+            }
         }
 
-        setInterval(() => {
-            if(!isContinuousLoop || !isWiFiConnected) return;
-            const d = new Date();
-            document.getElementById('v21').innerText = d.getUTCHours() + ":" + String(d.getUTCMinutes()).padStart(2, '0');
-            document.getElementById('v22').innerText = (d.getTimezoneOffset() / -60) + " Hours";
-            document.getElementById('d22').innerText = Intl.DateTimeFormat().resolvedOptions().timeZone;
-            document.getElementById('v23').innerText = (((d.getHours()*60 + d.getMinutes()) / 1440) * 100).toFixed(1) + "%";
-            const start = new Date(d.getFullYear(), 0, 1);
-            document.getElementById('v24').innerText = (((d - start) / (1000*60*60*24*365)) * 100).toFixed(2) + "%";
-            document.getElementById('v25').innerText = Math.floor(Date.now() / 1000);
-            document.getElementById('v26').innerText = Math.floor((Date.now() - start)/(24*60*60*1000));
-            document.getElementById('v27').innerText = d.toLocaleString('default', { month: 'short' });
-            document.getElementById('v28').innerText = d.toLocaleString('default', { weekday: 'short' });
-            document.getElementById('v29').innerText = (new Date(d.getFullYear(), 1, 29).getMonth() === 1) ? "Yes" : "No";
-            document.getElementById('v30').innerText = Math.floor(performance.now()) + "ms";
-        }, 400);
-
-        async function fetchWebData() {
-            if(!isWiFiConnected) return;
-            try {
-                const res = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,solana,dogecoin&vs_currencies=usd');
-                const data = await res.json();
-                document.getElementById('v11').innerText = "$" + data.bitcoin.usd.toLocaleString();
-                document.getElementById('v12').innerText = "$" + data.ethereum.usd.toLocaleString();
-                document.getElementById('v13').innerText = "$" + data.solana.usd.toLocaleString();
-                document.getElementById('v14').innerText = "$" + data.dogecoin.usd.toFixed(3);
-            } catch(e){}
-
-            try {
-                const res = await fetch('https://ipapi.co/json/');
-                const data = await res.json();
-                document.getElementById('v15').innerText = data.city || "Unknown";
-                document.getElementById('d15').innerText = data.org;
-                document.getElementById('v16').innerText = data.country_code;
-                document.getElementById('d16').innerText = data.country_name;
-                document.getElementById('v18').innerText = data.currency;
-
-                const wRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${data.latitude}&longitude=${data.longitude}&current_weather=true`);
-                const wData = await wRes.json();
-                if(temperatureDisplayUnit === "F") {
-                    document.getElementById('v17').innerText = ((wData.current_weather.temperature * 9/5) + 32).toFixed(1) + "°F";
-                    document.getElementById('d17').innerText = wData.current_weather.temperature + "°C Local";
-                } else {
-                    document.getElementById('v17').innerText = wData.current_weather.temperature + "°C";
-                    document.getElementById('d17').innerText = "Local Temperature";
-                }
-            } catch(e){}
-
-            try {
-                const res = await fetch('https://uselessfacts.jsph.pl/random.json?language=en');
-                const data = await res.json();
-                document.getElementById('v19').innerText = data.text.length > 50 ? data.text.substring(0, 47) + "..." : data.text;
-            } catch(e){}
+        function clearExtraWidgets() {
+            const dynamicWidgets = document.querySelectorAll('.dynamic-added-widget');
+            dynamicWidgets.forEach(w => w.remove());
         }
 
-        loadSystemData(); fetchWebData();
+        // --- Dynamic Island Control Pipeline ---
+        function mutateIslandState(targetState) {
+            const island = document.getElementById('island-node');
+            island.className = "dynamic-island state-" + targetState;
+            
+            document.querySelectorAll('.island-view').forEach(view => view.classList.remove('active'));
+            
+            const selectedView = document.getElementById('view-' + targetState);
+            if(selectedView) selectedView.classList.add('active');
+        }
+
+        function collapseIslandState() {
+            const island = document.getElementById('island-node');
+            island.className = "dynamic-island";
+            document.querySelectorAll('.island-view').forEach(view => view.classList.remove('active'));
+            document.getElementById('view-default').classList.add('active');
+        }
+
+        // --- Hidden Dock Engine ---
+        let dockTimer = null;
+        function revealFloatingDock() {
+            const dock = document.getElementById('smart-dock');
+            dock.classList.add('visible');
+            
+            clearTimeout(dockTimer);
+            dockTimer = setTimeout(() => {
+                dock.classList.remove('visible');
+            }, 15000);
+        }
+
+        // --- Multi-Window Management ---
+        let windowZIndexCounter = 1000;
+
+        function launchWindow(appName, appIcon) {
+            revealFloatingDock();
+            const desktop = document.getElementById('desktop-env');
+            const winId = 'win-' + Date.now();
+            
+            let windowContent = '';
+            if(appName === 'Notes') {
+                windowContent = `<textarea class="win-textarea" placeholder="Type notes here..."></textarea>`;
+            } else if(appName === 'Alarm') {
+                windowContent = `<div style="text-align:center; padding-top:20px;"><div style="font-size:1.8rem; font-weight:bold;">07:00 AM</div><button class="sys-btn" style="margin-top:10px;">Arm Alarm</button></div>`;
+            } else if(appName === 'Terminal') {
+                windowContent = `<div style="font-family:monospace; font-size:0.75rem; color:#34c759;">root@iWidgetOS:~# systemctl status engine<br>[OK] Sandbox Active</div>`;
+            }
+
+            const winTemplate = `
+                <div class="system-window" id="${winId}" style="z-index:${++windowZIndexCounter};" onclick="focusSystemWindow('${winId}')">
+                    <div class="window-titlebar" onmousedown="initiateWindowDrag(event, '${winId}')">
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <span>${appIcon}</span>
+                            <span class="window-title">${appName}</span>
+                        </div>
+                        <button class="window-close-btn" onclick="closeSystemWindow('${winId}')"></button>
+                    </div>
+                    <div class="window-body">
+                        ${windowContent}
+                    </div>
+                </div>
+            `;
+            desktop.insertAdjacentHTML('beforeend', winTemplate);
+        }
+
+        function closeSystemWindow(id) {
+            const targetWin = document.getElementById(id);
+            if(targetWin) targetWin.remove();
+        }
+
+        function focusSystemWindow(id) {
+            const targetWin = document.getElementById(id);
+            if(targetWin) targetWin.style.zIndex = ++windowZIndexCounter;
+        }
+
+        function initiateWindowDrag(e, id) {
+            if(e.target.classList.contains('window-close-btn')) return;
+            const win = document.getElementById(id);
+            focusSystemWindow(id);
+            
+            let startX = e.clientX, startY = e.clientY;
+            let winLeft = win.offsetLeft, winTop = win.offsetTop;
+            
+            function onMouseMove(moveEvent) {
+                win.style.left = (winLeft + moveEvent.clientX - startX) + 'px';
+                win.style.top = (winTop + moveEvent.clientY - startY) + 'px';
+            }
+            
+            function onMouseUp() {
+                document.removeEventListener('mousemove', onMouseMove);
+                document.removeEventListener('mouseup', onMouseUp);
+            }
+            
+            document.addEventListener('mousemove', onMouseMove);
+            document.addEventListener('mouseup', onMouseUp);
+        }
+
+        // --- Benchmark Metrics Engine ---
+        let totalFrames = 0;
+        let lastLoggedTime = performance.now();
+        let loopDeltaTime = performance.now();
+
+        function analyticsCycle() {
+            totalFrames++;
+            let currentInstant = performance.now();
+            let structuralDelta = currentInstant - loopDeltaTime;
+            
+            const deltaElem = document.getElementById('bench-delta');
+            if (deltaElem) deltaElem.innerText = structuralDelta.toFixed(2) + " ms";
+            
+            if (currentInstant >= lastLoggedTime + 1000) {
+                const fpsElem = document.getElementById('bench-fps');
+                if (fpsElem) fpsElem.innerText = totalFrames + " FPS";
+                totalFrames = 0;
+                lastLoggedTime = currentInstant;
+            }
+            
+            loopDeltaTime = currentInstant;
+            requestAnimationFrame(analyticsCycle);
+        }
+        requestAnimationFrame(analyticsCycle);
+
+        function executeThreadStressTest() {
+            let arr = [];
+            for(let i = 0; i < 3000000; i++) {
+                arr.push(Math.sqrt(i) * Math.sin(i));
+            }
+        }
     </script>
 </body>
 </html>
