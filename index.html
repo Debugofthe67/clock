@@ -31,13 +31,15 @@
             --global-font-scale: 1;
         }
 
-/* 1. Define the font first at the very top */
 @font-face {
   font-family: 'TallFont';
-  src: url('tall.tff') format('truetype');
+  src: url('./tall.tff') format('truetype'),
+       url('tall.tff') format('truetype'),
+       url('/tall.tff') format('truetype');
   font-weight: normal;
   font-style: normal;
 }
+
 
 /* 2. Update your universal selector */
 * {
