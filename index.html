@@ -31,12 +31,23 @@
             --global-font-scale: 1;
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-        }
+/* 1. Define the font first at the very top */
+@font-face {
+  font-family: 'TallFont';
+  src: url('tall.tff') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+/* 2. Update your universal selector */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  /* Your font is now the first choice, others are fallbacks */
+  font-family: 'TallFont', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
 
         body {
             background: var(--bg-gradient);
@@ -295,6 +306,15 @@
         .widget-title { font-size: calc(0.75rem * var(--global-font-scale)); text-transform: uppercase; letter-spacing: 1px; opacity: 0.6; font-weight: 700; }
         .widget-value { font-size: calc(1.4rem * var(--global-font-scale)); font-weight: 600; margin: 5px 0; word-break: break-all; }
         .widget-desc { font-size: calc(0.75rem * var(--global-font-scale)); opacity: 0.7; }
+
+        #media-time-label {
+  /* Forces numbers to have equal widths so the clock doesn't shake */
+  font-variant-numeric: tabular-nums; 
+  
+  /* Optional: Ensures the custom font takes priority on this specific label */
+  font-family: 'TallFont', sans-serif; 
+}
+
     </style>
 </head>
 <body>
