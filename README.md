@@ -46,8 +46,6 @@ By default, the system streams online royalty-free test music. To use your own s
 ---
    # Developing for iWidgetOS
 
-<p align="center">
-  <img src="icon.png" alt="image not available">
-</p>
+
 
 
